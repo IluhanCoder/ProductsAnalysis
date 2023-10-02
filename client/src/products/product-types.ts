@@ -10,7 +10,7 @@ export type Product = {
     description: string,
     price: number,
     characteristics: Characteristic[],
-    image: Buffer
+    image?: any
 }
 
 export interface IProduct {
@@ -20,7 +20,7 @@ export interface IProduct {
     description: string,
     price: number,
     characteristics: Characteristic[],
-    image: Buffer
+    image?: File
 }
 
 export interface ProductFilter {

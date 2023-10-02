@@ -1,14 +1,24 @@
 import express, {Express, Request, Response} from "express";
 import dotenv from "dotenv";
 import router from "./router";
-import { PrismaClient } from "@prisma/client";
+import cors from "cors";
 
 dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT;
 
+app.use(express.urlencoded({extended:true}));
 app.use(express.json());
+
+const CLIENT_URL = process.env.CLIENT_URL;
+
+app.use(
+    cors({
+      credentials: true,
+      origin:CLIENT_URL,
+    })
+  );
 
 app.use("/", router);
 

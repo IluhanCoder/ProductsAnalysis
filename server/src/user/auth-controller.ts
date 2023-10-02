@@ -1,0 +1,59 @@
+import { CookieOptions, NextFunction, Request, Response } from "express";
+import { PrismaClient } from "@prisma/client";
+import generateToken from "./generate-token";
+import bcrypt from "bcryptjs";
+
+const prisma = new PrismaClient();
+
+export default new class AuthController {
+    async signup (req: Request, res: Response, next: NextFunction) {
+        try {
+          const { email, password, username } = req.body;
+          const existingUser = await prisma.user.findFirst({ where: {email} });
+          console.log(existingUser);
+          if (existingUser) {
+            return res.json({ message: "User already exists" });
+          }
+          const data = { email, password, username };
+          const user = await prisma.user.create({data});
+          const token = generateToken(user.id);
+          res.cookie("token", token, {
+            withCredentials: true,
+            httpOnly: false,
+          } as CookieOptions);
+          res
+            .status(201)
+            .json({ message: "User signed in successfully", success: true, user });
+          next();
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+    async login (req: Request, res: Response, next: NextFunction) {
+        try {
+          const { email, password } = req.body;
+          if(!email || !password ){
+            return res.json({message:'All fields are required'})
+          }
+          const user = await prisma.user.findUnique({where: { email }});
+          if(!user){
+            return res.json({message:'Incorrect password or email' }) 
+          }
+          const auth = await bcrypt.compare(password,user.password)
+          if (!auth) {
+            return res.json({message:'Incorrect password or email' }) 
+          }
+           const token = generateToken(user.id);
+           res.cookie("token", token, {
+             withCredentials: true,
+             httpOnly: false,
+           } as CookieOptions);
+           res.status(201).json({ message: "User logged in successfully", success: true });
+           next()
+        } catch (error) {
+          console.error(error);
+        }
+      }
+}
+

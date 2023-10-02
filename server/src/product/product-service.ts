@@ -1,9 +1,21 @@
-import { IProduct, ProductFilter } from "./types";
+import { error } from "console";
+import { IProduct, ProductFilter, Product } from "./types";
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient();
 
 export default new class ProductService {
+    async deleteAvatar(productId: string) {
+        try {
+          const product: Product | null = await prisma.product.findUnique({where: {id: productId}});
+          if (product === null || product.image === undefined) throw new Error("deleting image error");
+          await prisma.product.update({where: { id: product.id }, data: {image: undefined}});
+          return product;
+        } catch (error) {
+          throw error;
+        }
+    }
+
     async createProduct (data: IProduct) {
         try {   
             return await prisma.product.create({ data });
