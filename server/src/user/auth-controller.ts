@@ -2,6 +2,7 @@ import { CookieOptions, NextFunction, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import generateToken from "./generate-token";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
 
@@ -14,7 +15,8 @@ export default new class AuthController {
           if (existingUser) {
             return res.json({ message: "User already exists" });
           }
-          const data = { email, password, username };
+          const hashedPassword = await bcrypt.hash(password, 12);
+          const data = { email, password: hashedPassword, username };
           const user = await prisma.user.create({data});
           const token = generateToken(user.id);
           res.cookie("token", token, {
@@ -54,6 +56,22 @@ export default new class AuthController {
         } catch (error) {
           console.error(error);
         }
+      }
+
+      async userVerification (req: Request, res: Response) {
+        const token = req.cookies.token
+        if (!token) {
+          return res.json({ status: false })
+        }
+        jwt.verify(token, process.env.TOKEN_KEY!, async (err: any, data: any) => {
+          if (err) {
+          return res.json({ status: false })
+          } else {
+            const user = await prisma.user.findUnique({where: {id: data.id}})
+            if (user) return res.json({ status: true, user: user.username })
+            else return res.json({ status: false })
+          }
+        })
       }
 }
 

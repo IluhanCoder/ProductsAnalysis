@@ -2,6 +2,7 @@ import express, {Express, Request, Response} from "express";
 import dotenv from "dotenv";
 import router from "./router";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -19,6 +20,8 @@ app.use(
       origin:CLIENT_URL,
     })
   );
+
+app.use(cookieParser());
 
 app.use("/", router);
 

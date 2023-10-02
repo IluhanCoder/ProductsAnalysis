@@ -12,6 +12,8 @@ router.get('/', (req: Request, res: Response) => {
     return res.send("get success");
 })
 
+router.post('/', authController.userVerification);
+
 //todo: images storing
 router.post('/product', upload.single("file"), productController.createProduct);
 router.get('/product', productController.fetchProducts);
