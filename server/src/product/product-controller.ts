@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import ProductService from "./product-service";
-import { IProduct, Product } from "./types";
+import { IProduct, Product } from "./product-types";
 import productService from "./product-service";
 
 export default new class ProductController {

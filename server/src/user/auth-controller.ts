@@ -3,21 +3,20 @@ import { PrismaClient } from "@prisma/client";
 import generateToken from "./generate-token";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
-const prisma = new PrismaClient();
+import prismaClient from "../prisma-client";
 
 export default new class AuthController {
     async signup (req: Request, res: Response, next: NextFunction) {
         try {
           const { email, password, username } = req.body;
-          const existingUser = await prisma.user.findFirst({ where: {email} });
+          const existingUser = await prismaClient.user.findFirst({ where: {email} });
           console.log(existingUser);
           if (existingUser) {
             return res.json({ message: "User already exists" });
           }
           const hashedPassword = await bcrypt.hash(password, 12);
           const data = { email, password: hashedPassword, username };
-          const user = await prisma.user.create({data});
+          const user = await prismaClient.user.create({data});
           const token = generateToken(user.id);
           res.cookie("token", token, {
             withCredentials: true,
@@ -38,7 +37,7 @@ export default new class AuthController {
           if(!email || !password ){
             return res.json({message:'All fields are required'})
           }
-          const user = await prisma.user.findUnique({where: { email }});
+          const user = await prismaClient.user.findUnique({where: { email }});
           if(!user){
             return res.json({message:'Incorrect password or email' }) 
           }
@@ -67,7 +66,7 @@ export default new class AuthController {
           if (err) {
           return res.json({ status: false })
           } else {
-            const user = await prisma.user.findUnique({where: {id: data.id}})
+            const user = await prismaClient.user.findUnique({where: {id: data.id}})
             if (user) return res.json({ status: true, user: user.username })
             else return res.json({ status: false })
           }

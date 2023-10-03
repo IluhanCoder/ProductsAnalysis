@@ -1,15 +1,12 @@
-import { error } from "console";
-import { IProduct, ProductFilter, Product } from "./types";
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient();
+import { IProduct, ProductFilter, Product } from "./product-types";
+import prismaClient from "../prisma-client";
 
 export default new class ProductService {
     async deleteAvatar(productId: string) {
         try {
-          const product: Product | null = await prisma.product.findUnique({where: {id: productId}});
+          const product: Product | null = await prismaClient.product.findUnique({where: {id: productId}});
           if (product === null || product.image === undefined) throw new Error("deleting image error");
-          await prisma.product.update({where: { id: product.id }, data: {image: undefined}});
+          await prismaClient.product.update({where: { id: product.id }, data: {image: undefined}});
           return product;
         } catch (error) {
           throw error;
@@ -18,7 +15,7 @@ export default new class ProductService {
 
     async createProduct (data: IProduct) {
         try {   
-            return await prisma.product.create({ data });
+            return await prismaClient.product.create({ data });
         } catch (error) {
             console.error(error)
             process.exit(1)
@@ -27,7 +24,7 @@ export default new class ProductService {
 
     async fetchProducts () {
         try {   
-            return await prisma.product.findMany();
+            return await prismaClient.product.findMany();
         } catch (error) {
             console.error(error)
             process.exit(1)
@@ -36,7 +33,7 @@ export default new class ProductService {
 
     async updateProduct (productId: string, newData: IProduct) {
         try {
-            return await prisma.product.update({
+            return await prismaClient.product.update({
                 where: { id: productId },
                 data: newData
             })
@@ -48,7 +45,7 @@ export default new class ProductService {
 
     async deleteProduct (productId: string) {
         try {
-            return await prisma.product.delete({
+            return await prismaClient.product.delete({
                 where: { id: productId }
             })
         } catch (error) {
@@ -59,7 +56,7 @@ export default new class ProductService {
 
     async filterProducts (filter: ProductFilter) {
         try {
-            return await prisma.product.findMany({
+            return await prismaClient.product.findMany({
                 where: {
                     ...filter
                 }

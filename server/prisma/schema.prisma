@@ -16,6 +16,11 @@ type Characteristic {
   value  String
 }
 
+type Purchase {
+  id                    String
+  quantity              Int
+}
+
 model Product {
   id                    String    @id @default(auto()) @map("_id") @db.ObjectId
   category              String
@@ -24,6 +29,12 @@ model Product {
   price                 Int
   characteristics       Characteristic[]
   image                 Bytes
+}
+
+model Transaction {
+  id                    String    @id @default(auto()) @map("_id") @db.ObjectId
+  date                  DateTime
+  products              Purchase[]
 }
 
 model User {
