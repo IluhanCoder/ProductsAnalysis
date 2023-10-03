@@ -56,6 +56,7 @@ export default new class ProductService {
 
     async filterProducts (filter: ProductFilter) {
         try {
+            console.log(filter);
             return await prismaClient.product.findMany({
                 where: {
                     ...filter

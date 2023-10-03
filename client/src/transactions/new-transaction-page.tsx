@@ -1,38 +1,37 @@
 import { useState } from "react";
-import { ITransaction } from "./transaction-types";
+import { ITransaction, Purchase, Transaction } from "./transaction-types";
 import transactionService from "./transaction-service";
+import ProductsCatalogue from "../products/products-catalogue";
+import { Product } from "../products/product-types";
+import PurchasesMapper from "./purchases-mapper";
 
 const NewTransactionPage = () => {
-    const [inputValue, setInputValue] = useState<ITransaction>({
-        date: new Date(),
-        products: []
-    }); 
-    const [id, setId] = useState<string>("");
+    const [date, setDate] = useState<Date>(new Date());
+    const [products, setProducts] = useState<Purchase[]>([]);
+    const [transaction, setTransaction] = useState<Transaction[]>([]);
 
-    const handleOnChange = (event: any) => {
-        const name = event.target.name;
-        const value = event.target.value;
-        setInputValue(values => ({...values, [name]: value}))
-    }
-
-    const handlePush = async () => {
-        setInputValue({
-            date: inputValue.date,
-            products: [...inputValue.products, {id, quantity: 1}]
-        })
-        setId("");
+    const handlePush = async (product: Product) => {
+        const newPurchase: Purchase = {
+            id: product.id,
+            quantity: 1
+        };
+        setProducts([...products, newPurchase]);
     }
 
     const handleSubmit = async () => {
-        await transactionService.createTransaction(inputValue);
+        const newTransaction: ITransaction = {
+            date,
+            products
+        };
+        await transactionService.createTransaction(newTransaction);
     }
 
     return <div>
-        <form>
-            <input type="text" value={id} onChange={(e) => setId(e.target.value)}/>
-            <button type="button" onClick={handlePush}>додати товар</button>
+        <div>
             <button type="button" onClick={handleSubmit}>створити транзакцію</button>
-        </form>
+            <PurchasesMapper transaction={transaction} setTransactions={setTransaction}/>
+            <ProductsCatalogue isPicker onPick={handlePush}/>
+        </div>
     </div>
 }
 

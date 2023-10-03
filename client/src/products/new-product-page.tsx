@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Characteristic, IProduct } from "./product-types";
-import CharacteristicsMapper from "./new-product-components/characteristics-mapper";
+import CharacteristicsMapper from "./characteristics-mapper";
 import productService, { newProductRequestData } from "./product-service";
 
 const NewProductPage = () => {

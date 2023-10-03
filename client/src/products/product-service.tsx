@@ -1,5 +1,5 @@
 import $api from "../axios-setup"
-import { IProduct } from "./product-types";
+import { IProduct, ProductFilter } from "./product-types";
 
 export type newProductRequestData = {
     product: IProduct,
@@ -19,5 +19,9 @@ export default new class ProductService {
             headers: { 'content-type': 'application/json' }
         }
         return (await $api.post('/product', formData));
+    }
+
+    async filterProducts (filter: ProductFilter) {
+        return (await $api.post("/filter-products", filter)).data;
     }
 }

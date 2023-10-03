@@ -31,7 +31,7 @@ export default new class ProductController {
     }
 
     async filterProducts (req: Request, res: Response) {
-        const { filter } = req.body;
+        const filter = req.body;
         const products = await productService.filterProducts(filter);
         return res.status(200).json(products);
     }

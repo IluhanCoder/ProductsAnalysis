@@ -24,8 +24,8 @@ export interface IProduct {
 }
 
 export interface ProductFilter {
-    category?: string,
-    name?: string,
-    description?: string,
-    price?: number
+    category?: string | {contains: string},
+    name?: string | {contains: string},
+    description?: string | {contains: string},
+    price?: number | { gt: number, lt: number }
 }
