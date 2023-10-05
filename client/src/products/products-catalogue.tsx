@@ -8,9 +8,10 @@ import CharacteristicsMapper from "./characteristics-mapper";
 type LocalParams = {
     isPicker?: boolean,
     onPick?: (picketProduct: Product) => {}
+    deleteAvailable?: boolean
 }
 const ProductsCatalogue = (params: LocalParams) => {
-    const {isPicker, onPick} = params;
+    const {isPicker, onPick, deleteAvailable} = params;
 
     const [products, setProducts] = useState<Product[]>([]);
 
@@ -26,6 +27,10 @@ const ProductsCatalogue = (params: LocalParams) => {
     const handleFilter = async (filter: ProductFilter) => {
         const newProducts = await productService.filterProducts(filter);
         setProducts(newProducts);
+    }
+
+    const handleDelete = async (productId: string) => {
+        await productService.deleteProduct(productId);
     }
 
     useEffect(() => {
@@ -46,7 +51,7 @@ const ProductsCatalogue = (params: LocalParams) => {
                     <div>{product.name}</div>
                     <div>{product.category}</div>
                     <div>{product.description}</div>
-                    <div>{product.price}</div>
+                    <div>{`${product.price} грн`}</div>
                     <div>
                         <CharacteristicsMapper characteristics={product.characteristics}/>
                     </div>
@@ -54,6 +59,12 @@ const ProductsCatalogue = (params: LocalParams) => {
                         <div>
                             <button type="button" onClick={() => onPick!(product)}>додати товар</button>
                         </div>
+                    }
+                    {
+                        deleteAvailable &&
+                        <div>
+                            <button type="button" onClick={() => handleDelete(product.id)}>видалити продукт</button>
+                        </div> 
                     }
                 </div>
             })

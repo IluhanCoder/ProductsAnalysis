@@ -24,4 +24,8 @@ export default new class ProductService {
     async filterProducts (filter: ProductFilter) {
         return (await $api.post("/filter-products", filter)).data;
     }
+
+    async deleteProduct (productId: string) {
+        await $api.delete(`/product/${productId}`);
+    }
 }

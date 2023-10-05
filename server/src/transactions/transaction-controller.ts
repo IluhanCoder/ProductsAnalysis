@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
 import prismaClient from "../prisma-client";
 import transactionService from "./transaction-service";
+import { ITransaction } from "./transaction-types";
 
 export default new class TransactionController {
     async createTransaction(req: Request, res: Response) {
-        const data = req.body;
-        const result = await transactionService.createTransaction(data);
+        const data: ITransaction = req.body;
+        const result = await transactionService.createTransaction(data.date, data.products);
         return res.status(200).send(result);
     }
 

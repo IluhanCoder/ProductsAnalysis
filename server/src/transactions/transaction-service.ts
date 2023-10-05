@@ -1,21 +1,48 @@
 import prismaClient from "../prisma-client";
-import { ITransaction, Transaction, TransactionFilter } from "./transaction-types";
+import { ITransaction, Purchase, TransactionFilter } from "./transaction-types";
+import { Product, Transaction } from "@prisma/client";
 
 export default new class TransactionService {
-    async createTransaction (data: Transaction) {
-        return await prismaClient.transaction.create({ data });
+    async createTransaction (date: Date, productData: Purchase[]) {
+        const createdTransaction = await prismaClient.transaction.create({
+            data: {
+              date: date,
+              products: {
+                create: productData.map(({ productId, quantity }) => ({
+                  product: {
+                    connect: { id: productId },
+                  },
+                  quantity: quantity,
+                })),
+              },
+            },
+            include: {
+              products: {
+                include: {
+                  product: true,
+                },
+              },
+            },
+          });
+      
+          return createdTransaction;
     }
 
     async fetchTransactions () {
-        try {   
-            return await prismaClient.transaction.findMany();
-        } catch (error) {
-            console.error(error)
-            process.exit(1)
-        }
+        const transactions = await prismaClient.transaction.findMany({
+            include: {
+              products: {
+                include: {
+                  product: true,
+                },
+              },
+            },
+        });
+      
+        return transactions;
     }
 
-    async updateTransaction (transactionId: string, newData: ITransaction) {
+    async updateTransaction (transactionId: string, newData: Transaction) {
         try {
             return await prismaClient.transaction.update({
                 where: { id: transactionId },
@@ -38,7 +65,7 @@ export default new class TransactionService {
         }
     }
 
-    async filterTransactions (filter: TransactionFilter) {
+    async filterTransactions (filter: Transaction) {
         try {
             return await prismaClient.transaction.findMany({
                 where: {

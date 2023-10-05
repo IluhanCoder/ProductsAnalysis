@@ -1,10 +1,11 @@
-import { IProduct, ProductFilter, Product } from "./product-types";
+import { IProduct, ProductFilter, Characteristic } from "./product-types";
 import prismaClient from "../prisma-client";
+import { Product } from "@prisma/client";
 
 export default new class ProductService {
     async deleteAvatar(productId: string) {
         try {
-          const product: Product | null = await prismaClient.product.findUnique({where: {id: productId}});
+          const product = await prismaClient.product.findUnique({where: {id: productId}});
           if (product === null || product.image === undefined) throw new Error("deleting image error");
           await prismaClient.product.update({where: { id: product.id }, data: {image: undefined}});
           return product;
@@ -15,7 +16,24 @@ export default new class ProductService {
 
     async createProduct (data: IProduct) {
         try {   
-            return await prismaClient.product.create({ data });
+            const query = {
+                data: {
+                    name: data.name,
+                    category: data.category,
+                    description: data.description,
+                    price: data.price,
+                    image: data.image,
+                    characteristics: {
+                      createMany: {
+                        data: data.characteristics.map(({ label, value }: Characteristic) => ({
+                          key: label,
+                          value: value,
+                        })),
+                      },
+                    },
+                  },
+            }
+            return await prismaClient.product.create(query);
         } catch (error) {
             console.error(error)
             process.exit(1)
@@ -24,14 +42,19 @@ export default new class ProductService {
 
     async fetchProducts () {
         try {   
-            return await prismaClient.product.findMany();
+            return await prismaClient.product.findMany(
+                {
+                    include: {
+                      characteristics: true, 
+                  }
+                });
         } catch (error) {
             console.error(error)
             process.exit(1)
         }
     }
 
-    async updateProduct (productId: string, newData: IProduct) {
+    async updateProduct (productId: string, newData: Product) {
         try {
             return await prismaClient.product.update({
                 where: { id: productId },
@@ -60,6 +83,9 @@ export default new class ProductService {
             return await prismaClient.product.findMany({
                 where: {
                     ...filter
+                },
+                include: {
+                    characteristics: true, 
                 }
             })
         } catch (error) {

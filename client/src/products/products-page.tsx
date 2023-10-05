@@ -2,7 +2,7 @@ import ProductsCatalogue from "./products-catalogue";
 
 const ProductsPage = () => {
     return <div>
-        <ProductsCatalogue/>
+        <ProductsCatalogue deleteAvailable/>
     </div>
 }
 

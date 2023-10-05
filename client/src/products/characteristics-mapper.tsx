@@ -18,9 +18,9 @@ const CharacteristicsMapper = (params: Params) => {
     return <div>
         {
             characteristics.map((item: Characteristic) => {
-                return <div key={item.label}>
+                return <div key={item.key}>
                         <div>{
-                                item.label
+                                item.key
                             }</div>
                         <div>{
                                 item.value

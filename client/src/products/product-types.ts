@@ -1,5 +1,5 @@
 export type Characteristic = {
-    label: string,
+    key: string,
     value: string
 }
 

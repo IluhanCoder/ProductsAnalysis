@@ -1,6 +1,7 @@
 export type Purchase = {
     id: string,
-    quantity: number
+    quantity: number,
+    productId: string
 }
 
 export interface ITransaction {

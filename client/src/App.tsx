@@ -7,6 +7,11 @@ import SignupPage from './auth/signup-page';
 import LoginPage from './auth/login-page';
 import NewTransactionPage from './transactions/new-transaction-page';
 
+import { registerLocale, setDefaultLocale } from  "react-datepicker";
+import uk from 'date-fns/locale/uk';
+import TransactionsPage from './transactions/transactions-page';
+registerLocale('ua', uk)
+
 function App() {
   return (
     <BrowserRouter>
@@ -17,6 +22,7 @@ function App() {
           <Route path='signup' element={<SignupPage/>}/>
           <Route path='login' element={<LoginPage/>}/>
           <Route path='new-transaction' element={<NewTransactionPage/>}/>
+          <Route path='transactions' element={<TransactionsPage/>}/>
       </Routes>
     </BrowserRouter>
   );

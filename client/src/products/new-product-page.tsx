@@ -14,7 +14,7 @@ const NewProductPage = () => {
 
     const [characteristics, setCharacteristics] = useState<Characteristic[]>([]);
     
-    const defaultCharacteristic = {label: "", value: ""}
+    const defaultCharacteristic = {key: "", value: ""}
     const [currentCharacteristic, setCurrentCharacteristic] = useState<Characteristic>(defaultCharacteristic);
 
     useEffect(() => {
@@ -24,12 +24,12 @@ const NewProductPage = () => {
 
     const characteristicValidation = () => 
         currentCharacteristic.value.length > 0 && 
-        currentCharacteristic.label.length > 0
+        currentCharacteristic.key.length > 0
     
-    const handleCharacteristicLabel = (newLabel: string) => {
+    const handleCharacteristicLabel = (newKey: string) => {
         if(currentCharacteristic) {
             const newCharacteristic = {
-                label: newLabel,
+                key: newKey,
                 value: currentCharacteristic?.value
             };
             setCurrentCharacteristic(newCharacteristic);
@@ -39,7 +39,7 @@ const NewProductPage = () => {
     const handleCharacteristicValue = (newValue: string) => {
         if(currentCharacteristic) {
             const newCharacteristic = {
-                label: currentCharacteristic?.label,
+                key: currentCharacteristic?.key,
                 value: newValue
             };
             setCurrentCharacteristic(newCharacteristic);
@@ -49,7 +49,7 @@ const NewProductPage = () => {
     const handleCharacteristicPush = () => {
         characteristicValidation();
         setCharacteristics([...characteristics, currentCharacteristic]);
-        setCurrentCharacteristic({label: "", value: ""});
+        setCurrentCharacteristic({key: "", value: ""});
     }
 
     const handleNewImage = (files: FileList | null) => {
@@ -116,7 +116,7 @@ const NewProductPage = () => {
                     <div>Характеристики:</div>
                     <div>
                         <label>Ключ</label>
-                        <input type="text" value={currentCharacteristic?.label} onChange={
+                        <input type="text" value={currentCharacteristic?.key} onChange={
                             (e) => handleCharacteristicLabel(e.target.value)
                         }/>
                         <label>Значення</label>

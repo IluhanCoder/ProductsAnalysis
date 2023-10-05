@@ -1,6 +1,22 @@
+import { Product } from "../products/product-types"
+
 export type Purchase = {
-    id: string,
+    id?: string,
+    quantity: number,
+    productId: string
+}
+
+export type PurchaseResponse = {
+    id?: string,
+    product: Product,
+    productId: string,
     quantity: number
+}
+
+export type TransactionResponse = {
+    id: string,
+    date: Date,
+    products: PurchaseResponse[]
 }
 
 export interface ITransaction {

@@ -8,7 +8,7 @@ export default new class ProductController {
         const productData: IProduct = JSON.parse(req.body.product);
         const file = req.file;
         productData.image = file?.buffer!;
-        const product: Product = await ProductService.createProduct(productData);
+        const product = await ProductService.createProduct(productData);
         return res.status(200).json(product);
     }
 

@@ -11,30 +11,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-type Characteristic {
-  label  String
-  value  String
-}
-
-type Purchase {
-  id                    String
-  quantity              Int
-}
-
 model Product {
-  id                    String    @id @default(auto()) @map("_id") @db.ObjectId
-  category              String
-  name                  String    
-  description           String
-  price                 Int
-  characteristics       Characteristic[]
-  image                 Bytes
+  id                 String               @id @default(auto()) @map("_id") @db.ObjectId
+  name               String?
+  category           String
+  description        String
+  price              Int
+  image              Bytes
+  characteristics    Characteristic[]
+  TransactionProduct TransactionProduct[]
+}
+
+model Characteristic {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  key       String?
+  value     String?
+  product   Product? @relation(fields: [productId], references: [id])
+  productId String?
+}
+
+model TransactionProduct {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  product       Product?     @relation(fields: [productId], references: [id])
+  quantity      Int?
+  productId     String?
+  Transaction   Transaction? @relation(fields: [transactionId], references: [id])
+  transactionId String?
 }
 
 model Transaction {
-  id                    String    @id @default(auto()) @map("_id") @db.ObjectId
-  date                  DateTime
-  products              Purchase[]
+  id       String               @id @default(auto()) @map("_id") @db.ObjectId
+  date     DateTime?
+  products TransactionProduct[]
 }
 
 model User {
