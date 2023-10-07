@@ -6,6 +6,7 @@ import multer from "multer";
 import path from "path";
 import authMiddleware from "./user/auth-middleware";
 import transactionController from "./transactions/transaction-controller";
+import analyticsController from "./analytics/analytics-controller";
 
 const router = Router();
 const upload = multer();
@@ -30,5 +31,8 @@ router.get('/transactions', authMiddleware, transactionController.fetchTransacti
 router.put('/transaction/:transactionId', authMiddleware, transactionController.updateTransaction);
 router.delete('/transaction/:transactionId', authMiddleware, transactionController.deleteTransaction);
 router.post('/filter-transactions', authMiddleware, transactionController.filterTransactions);
+
+router.post('/apriori', authMiddleware, analyticsController.transactionsApriori);
+router.post('/predict', authMiddleware, analyticsController.predictSales);
 
 export default router;
