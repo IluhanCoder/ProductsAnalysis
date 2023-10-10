@@ -57,7 +57,7 @@ const ProductsCatalogue = (params: LocalParams) => {
                     </div>
                     { isPicker &&
                         <div>
-                            <button type="button" onClick={() => onPick!(product)}>додати товар</button>
+                            <button type="button" onClick={() => onPick!(product)}>обрати товар</button>
                         </div>
                     }
                     {

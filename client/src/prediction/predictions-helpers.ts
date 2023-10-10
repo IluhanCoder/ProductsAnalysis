@@ -3,7 +3,7 @@ import { GraphUnit, PredictionResponseUnit, MonthlySalesResponseUnit } from "./p
 export function ConvertPredictionsForGraphs(predictions: PredictionResponseUnit[]) {
     const result: GraphUnit[] = [];
     predictions.map((prediction: PredictionResponseUnit) => {
-        result.push({name: prediction.month, uv: prediction.sales});
+        result.push({name: prediction.month, uv: Math.floor(prediction.sales)});
     })
     return result;
 }

@@ -3,25 +3,32 @@ import { MonthlySalesResponseUnit, PredictionResponseUnit } from "./prediction-t
 import predictionService from "./prediction-service";
 import PredictionGraph from "./prediction-graph";
 import { ConvertMonthlySalesForGraphs, ConvertPredictionsForGraphs } from "./predictions-helpers";
+import ProductsCatalogue from "../products/products-catalogue";
+import { Product } from "../products/product-types";
 
 const PredictionPage = () => {
     const [prediction, setPrediction] = useState<PredictionResponseUnit[]>([]);
     const [productSales, setProductSales] = useState<MonthlySalesResponseUnit[]>([]);
-    const [productId, setProductId] = useState<string>("651ea581caeb9c38bf9e0bec");
+    const [currentProduct, setCurrentProduct] = useState<Product>();
     const [months, setMonths] = useState<number>(20);
 
     const getData = async () => {
-        const data = await predictionService.getPrediction(productId, months);
-        const monthly = await predictionService.getMonthlySales(productId);
+        const data = await predictionService.getPrediction(currentProduct!.id, months);
+        const monthly = await predictionService.getMonthlySales(currentProduct!.id);
         setPrediction(data);
         setProductSales(monthly);
     }
 
+    const handlePick = async (product: Product) => {
+        setCurrentProduct(product);
+    }
+
     useEffect(() => {
-        getData();
-    }, [])
+        if(currentProduct) getData();
+    }, [setPrediction, currentProduct])
 
     return <div>
+        <ProductsCatalogue onPick={handlePick} isPicker/>
         <PredictionGraph data={ConvertMonthlySalesForGraphs(productSales)}/>
         <PredictionGraph data={ConvertPredictionsForGraphs(prediction)}/>
     </div>
