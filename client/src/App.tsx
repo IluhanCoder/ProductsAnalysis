@@ -10,6 +10,8 @@ import NewTransactionPage from './transactions/new-transaction-page';
 import { registerLocale, setDefaultLocale } from  "react-datepicker";
 import uk from 'date-fns/locale/uk';
 import TransactionsPage from './transactions/transactions-page';
+import AnalyticsPage from './analytics/analytics-page';
+import PredictionPage from './prediction/prediction-page';
 registerLocale('ua', uk)
 
 function App() {
@@ -23,6 +25,8 @@ function App() {
           <Route path='login' element={<LoginPage/>}/>
           <Route path='new-transaction' element={<NewTransactionPage/>}/>
           <Route path='transactions' element={<TransactionsPage/>}/>
+          <Route path='analytics' element={<AnalyticsPage/>}/>
+          <Route path='prediction' element={<PredictionPage/>}/>
       </Routes>
     </BrowserRouter>
   );

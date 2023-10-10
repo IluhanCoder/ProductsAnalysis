@@ -3,7 +3,7 @@ import transactionService from '../transactions/transaction-service';
 import { MonthlySalesPrediction } from './analytics-types';
 import simpleStats from 'simple-statistics';
 import prismaClient from '../prisma-client';
-import { incrementDateByOneMonth } from './analytics-helpers';
+import { fillMissingMonths, incrementDateByOneMonth } from './analytics-helpers';
 
 export default new class AnalyticsService {
   async transactionsApriori(minSupport: number, maxSupport: number, minConfidence: number, maxConfidence: number, category: string) {
@@ -185,8 +185,6 @@ async predictSales(productId: string, monthToPredict: number) {
           },
         },
       });
-
-      console.log(transactions);
     
       const monthlyInfoMap: Record<string, number> = {};
     
@@ -209,8 +207,20 @@ async predictSales(productId: string, monthToPredict: number) {
           transactions: monthlyInfoMap[monthYear],
         });
       }
+
+      function compareMonths(a: MonthlyTransactionInfo, b: MonthlyTransactionInfo) {
+        if (a.month < b.month) {
+          return -1;
+        }
+        if (a.month > b.month) {
+          return 1;
+        }
+        return 0;
+      }
+
+      monthlyTransactionInfo.sort(compareMonths);
     
-      return monthlyTransactionInfo;
+      return fillMissingMonths(monthlyTransactionInfo, "monthlyTransactions");
     }
 
     return await getMonthlyTransactionInfo(startMonth, endMonth);
@@ -274,8 +284,20 @@ async predictSales(productId: string, monthToPredict: number) {
           averageCost,
         });
       }
+
+      function compareMonths(a: MonthlyAverageCost, b: MonthlyAverageCost) {
+        if (a.month < b.month) {
+          return -1;
+        }
+        if (a.month > b.month) {
+          return 1;
+        }
+        return 0;
+      }
+
+      monthlyAverageCost.sort(compareMonths);
     
-      return monthlyAverageCost;
+      return fillMissingMonths(monthlyAverageCost, "averageTransaction");
     }
     
     return await getMonthlyAverageTransactionCost(startMonth, endMonth);
@@ -339,7 +361,20 @@ async predictSales(productId: string, monthToPredict: number) {
         });
       }
     
-      return monthlyTransactionCosts;
+      function compareMonths(a: MonthlyTransactionCost, b: MonthlyTransactionCost) {
+        if (a.month < b.month) {
+          return -1;
+        }
+        if (a.month > b.month) {
+          return 1;
+        }
+        return 0;
+      }
+      
+      // Sort the array by month
+      monthlyTransactionCosts.sort(compareMonths);
+
+      return fillMissingMonths(monthlyTransactionCosts, "monthlyTransactionSum");
     }
 
     return getMonthlyTransactionCosts(startMonth, endMonth);
@@ -356,8 +391,6 @@ async predictSales(productId: string, monthToPredict: number) {
       const currentYear = currentDate.getFullYear().toString();
       const startMonth = currentYear + '-01-01';
       const endMonth = currentYear + '-12-31';
-    
-      console.log(productId);
 
       const transactions = await prismaClient.transaction.findMany({
         select: {
@@ -405,8 +438,20 @@ async predictSales(productId: string, monthToPredict: number) {
           productSales: monthlyData[monthYear],
         });
       }
-    
-      return monthlyProductSales;
+
+      function compareMonths(a: MonthlyProductSales, b: MonthlyProductSales) {
+        if (a.month < b.month) {
+          return -1;
+        }
+        if (a.month > b.month) {
+          return 1;
+        }
+        return 0;
+      }
+
+      monthlyProductSales.sort(compareMonths);
+
+      return fillMissingMonths(monthlyProductSales, "monthlyProductSales");
     }
 
     return await getMonthlyProductSales(productId);

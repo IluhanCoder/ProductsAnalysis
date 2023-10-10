@@ -17,3 +17,35 @@ export function incrementDateByOneMonth(dateString: string): string {
     
     return updatedDateString;
   }
+
+export function fillMissingMonths(data: any, field: string) {
+  const startDate = new Date(data[0].month + '-01');
+  const endDate = new Date(incrementDateByOneMonth(data[data.length - 1].month) + '-01');
+  const result = [];
+  let currentDate = startDate;
+
+  while (currentDate <= endDate) {
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Zero-padding
+    const currentMonthStr = `${currentYear}-${currentMonth}`; // "yyyy-mm" format
+    const existingData = data.find((item: any) => item.month === currentMonthStr);
+
+    if (existingData) {
+      result.push(existingData);
+    } else {
+      if (field === "transactionCostsSum") result.push({ month: currentMonthStr, transactionCostsSum: 0 });
+      if (field === "averageTransaction") result.push({ month: currentMonthStr, averageCost: 0 })
+      if (field === "monthlyTransactionSum") result.push({ month: currentMonthStr, transactionCostsSum: 0 })
+      if (field === "monthlyTransactions") result.push({ month: currentMonthStr, transactions: 0 })
+      if (field === "monthlyProductSales") result.push({ month: currentMonthStr, productSales: 0 })
+    }
+
+    if(currentDate.getMonth() + 1 >= 12) {
+      currentDate.setFullYear(currentYear + 1);
+      currentDate.setMonth(0);
+    }
+    else currentDate.setMonth(currentDate.getMonth() + 1); // Move to the next month
+  }
+
+  return result;
+}
