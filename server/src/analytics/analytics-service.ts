@@ -3,9 +3,31 @@ import transactionService from '../transactions/transaction-service';
 import { MonthlySalesPrediction } from './analytics-types';
 import simpleStats from 'simple-statistics';
 import prismaClient from '../prisma-client';
+import { incrementDateByOneMonth } from './analytics-helpers';
 
 export default new class AnalyticsService {
-  async transactionsApriori(transactions: Transaction[], minSupport: number, maxSupport: number, minConfidence: number, maxConfidence: number, category: string) {
+  async transactionsApriori(minSupport: number, maxSupport: number, minConfidence: number, maxConfidence: number, category: string) {
+      const transactions = await prismaClient.transaction.findMany({
+        select: {
+          id: true,
+          date: true,
+          products: {
+            select: {
+              id: true,
+              quantity: true,
+              product: {
+                select: {
+                  id: true,
+                  name: true,
+                  category: true,
+                  description: true,
+                  price: true,
+                },
+              },
+            },
+          },
+        },
+      });
       async function fetchTransactions(): Promise<string[][]> {
           const transactionData: string[][] = [];
           transactions.forEach((transaction: any) => {
@@ -143,28 +165,8 @@ async predictSales(productId: string, monthToPredict: number) {
     return predictMonthlyProductSales(productId, monthToPredict);
   }
 
-  
-
   async monthlyTransactions(startMonth: string, endMonth: string) {
-    function incrementDateByOneMonth(dateString: string): string {
-      // Split the date string into year and month parts
-      const [year, month] = dateString.split('-').map(Number);
     
-      // Create a Date object with the provided year and month
-      const currentDate = new Date(year, month - 1); // Subtract 1 from month since it's 0-based
-    
-      // Add one month to the current date
-      currentDate.setMonth(currentDate.getMonth() + 1);
-    
-      // Extract the updated year and month
-      const updatedYear = currentDate.getFullYear();
-      const updatedMonth = currentDate.getMonth() + 1; // Add 1 back to month to match the format
-    
-      // Format the updated year and month as "YYYY-MM" and return it
-      const updatedDateString = `${updatedYear}-${updatedMonth.toString().padStart(2, '0')}`;
-      
-      return updatedDateString;
-    }
 
     interface MonthlyTransactionInfo {
       month: string;
@@ -240,7 +242,7 @@ async predictSales(productId: string, monthToPredict: number) {
         where: {
           date: {
             gte: new Date(startMonth),
-            lte: new Date(endMonth),
+            lte: new Date(incrementDateByOneMonth(endMonth)),
           },
         },
       });
@@ -303,7 +305,7 @@ async predictSales(productId: string, monthToPredict: number) {
         where: {
           date: {
             gte: new Date(startMonth),
-            lte: new Date(endMonth),
+            lte: new Date(incrementDateByOneMonth(endMonth)),
           },
         },
       });
@@ -341,5 +343,72 @@ async predictSales(productId: string, monthToPredict: number) {
     }
 
     return getMonthlyTransactionCosts(startMonth, endMonth);
+  }
+
+  async monthlyProductSales(productId: string) {
+    interface MonthlyProductSales {
+      month: string;
+      productSales: number;
+    }
+    
+    async function getMonthlyProductSales(productId: string): Promise<MonthlyProductSales[]> {
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear().toString();
+      const startMonth = currentYear + '-01-01';
+      const endMonth = currentYear + '-12-31';
+    
+      console.log(productId);
+
+      const transactions = await prismaClient.transaction.findMany({
+        select: {
+          date: true,
+          products: {
+            select: {
+              productId: true,
+              quantity: true,
+            },
+          },
+        },
+        where: {
+          date: {
+            gte: new Date(startMonth),
+            lte: new Date(incrementDateByOneMonth(endMonth))
+          }
+        }
+      });
+    
+      const monthlyData: Record<string, number> = {};
+    
+      transactions.forEach((transaction) => {
+        if (transaction.date) {
+          const monthYear = transaction.date.toISOString().slice(0, 7);
+          const productSale = transaction.products.reduce((acc, product) => {
+            if (product.productId === productId && product.quantity) {
+              return acc + product.quantity;
+            }
+            return acc;
+          }, 0);
+    
+          if (!monthlyData[monthYear]) {
+            monthlyData[monthYear] = productSale;
+          } else {
+            monthlyData[monthYear] += productSale;
+          }
+        }
+      });
+    
+      const monthlyProductSales: MonthlyProductSales[] = [];
+    
+      for (const monthYear in monthlyData) {
+        monthlyProductSales.push({
+          month: monthYear,
+          productSales: monthlyData[monthYear],
+        });
+      }
+    
+      return monthlyProductSales;
+    }
+
+    return await getMonthlyProductSales(productId);
   }
 }

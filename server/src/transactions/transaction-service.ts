@@ -40,6 +40,7 @@ export default new class TransactionService {
           transactionId: string | null;
           product: {
             price: number;
+            name: string;
           } | null;
         }[];
         totalCost: number;
@@ -56,6 +57,7 @@ export default new class TransactionService {
                 product: {
                   select: {
                     price: true,
+                    name: true
                   },
                 },
               },
@@ -124,6 +126,24 @@ export default new class TransactionService {
             process.exit(1)
         }
     }
+
+    // async getTransactionByProductName (productName: string) {
+    //   const transactions = await prismaClient.transaction.findMany({
+    //     where: {
+    //       products: {
+    //         some: {
+    //           product: {
+    //             name: {
+    //               equals: productName,
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   });
+  
+    //   return transactions;
+    // }
 
     async fetchRangeSales(productId: string) {
       const transactions = (await prismaClient.transaction.findMany({
