@@ -15,4 +15,16 @@ export default new class AnalyticsController {
         const result = await analyticsService.predictSales(productId, months);
         return res.status(200).send(result);
     }
+
+    async monthlySales(req: Request, res: Response) {
+        const {startMonth, endMonth} = req.body;
+        const result = await analyticsService.monthlyTransactions(startMonth, endMonth);
+        return res.status(200).send(result);
+    }
+
+    async averageTransaction(req: Request, res: Response) {
+        const {startMonth, endMonth} = req.body;
+        const result = await analyticsService.averageTransaction(startMonth, endMonth);
+        return res.status(200).send(result);
+    }
 }

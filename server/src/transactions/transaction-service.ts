@@ -1,7 +1,7 @@
 import { MonthlySalesPrediction } from "../analytics/analytics-types";
 import prismaClient from "../prisma-client";
 import { ITransaction, Purchase, TransactionFilter } from "./transaction-types";
-import { Product, Transaction } from "@prisma/client";
+import { Product, Transaction, TransactionProduct } from "@prisma/client";
 
 export default new class TransactionService {
     async createTransaction (date: Date, productData: Purchase[]) {
@@ -30,17 +30,63 @@ export default new class TransactionService {
     }
 
     async fetchTransactions () {
+      interface TransactionWithCost {
+        id: string;
+        date: Date | null;
+        products: {
+          id: string;
+          quantity: number | null;
+          productId: string | null;
+          transactionId: string | null;
+          product: {
+            price: number;
+          } | null;
+        }[];
+        totalCost: number;
+      }
+      
+      async function getTransactionsWithCost(): Promise<TransactionWithCost[]> {
         const transactions = await prismaClient.transaction.findMany({
-            include: {
-              products: {
-                include: {
-                  product: true,
+          select: {
+            id: true,
+            date: true,
+            products: {
+              select: {
+                quantity: true,
+                product: {
+                  select: {
+                    price: true,
+                  },
                 },
               },
             },
+          },
         });
       
-        return transactions;
+        const transactionsWithCost: any[] = [];
+      
+        transactions.forEach((transaction) => {
+          if (transaction.date) {
+            const totalCost = transaction.products.reduce((acc, product) => {
+              if (product.product && product.quantity) {
+                return acc + product.product.price * product.quantity;
+              }
+              return acc;
+            }, 0);
+      
+            transactionsWithCost.push({
+              id: transaction.id,
+              date: transaction.date,
+              products: transaction.products,
+              totalCost,
+            });
+          }
+        });
+      
+        return transactionsWithCost;
+      }
+
+      return await getTransactionsWithCost();
     }
 
     async updateTransaction (transactionId: string, newData: Transaction) {

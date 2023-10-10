@@ -2,6 +2,7 @@ import { Transaction } from '@prisma/client';
 import transactionService from '../transactions/transaction-service';
 import { MonthlySalesPrediction } from './analytics-types';
 import simpleStats from 'simple-statistics';
+import prismaClient from '../prisma-client';
 
 export default new class AnalyticsService {
   async transactionsApriori(transactions: Transaction[], minSupport: number, maxSupport: number, minConfidence: number, maxConfidence: number, category: string) {
@@ -140,5 +141,141 @@ async predictSales(productId: string, monthToPredict: number) {
     } 
 
     return predictMonthlyProductSales(productId, monthToPredict);
+  }
+
+  
+
+  async monthlyTransactions(startMonth: string, endMonth: string) {
+    function incrementDateByOneMonth(dateString: string): string {
+      // Split the date string into year and month parts
+      const [year, month] = dateString.split('-').map(Number);
+    
+      // Create a Date object with the provided year and month
+      const currentDate = new Date(year, month - 1); // Subtract 1 from month since it's 0-based
+    
+      // Add one month to the current date
+      currentDate.setMonth(currentDate.getMonth() + 1);
+    
+      // Extract the updated year and month
+      const updatedYear = currentDate.getFullYear();
+      const updatedMonth = currentDate.getMonth() + 1; // Add 1 back to month to match the format
+    
+      // Format the updated year and month as "YYYY-MM" and return it
+      const updatedDateString = `${updatedYear}-${updatedMonth.toString().padStart(2, '0')}`;
+      
+      return updatedDateString;
     }
+
+    interface MonthlyTransactionInfo {
+      month: string;
+      transactions: number;
+    }
+    
+    async function getMonthlyTransactionInfo(startMonth: string, endMonth: string): Promise<MonthlyTransactionInfo[]> {
+      const transactions = await prismaClient.transaction.findMany({
+        select: {
+          date: true,
+        },
+        where: {
+          date: {
+            gte: new Date(startMonth),
+            lte: new Date(incrementDateByOneMonth(endMonth)),
+          },
+        },
+      });
+
+      console.log(transactions);
+    
+      const monthlyInfoMap: Record<string, number> = {};
+    
+      transactions.forEach((transaction) => {
+        if (transaction.date) {
+          const monthYear = transaction.date.toISOString().slice(0, 7); // Extract YYYY-MM from the date
+          if (monthlyInfoMap[monthYear]) {
+            monthlyInfoMap[monthYear]++;
+          } else {
+            monthlyInfoMap[monthYear] = 1;
+          }
+        }
+      });
+    
+      const monthlyTransactionInfo: MonthlyTransactionInfo[] = [];
+    
+      for (const monthYear in monthlyInfoMap) {
+        monthlyTransactionInfo.push({
+          month: monthYear,
+          transactions: monthlyInfoMap[monthYear],
+        });
+      }
+    
+      return monthlyTransactionInfo;
+    }
+
+    return await getMonthlyTransactionInfo(startMonth, endMonth);
+  }
+
+  async averageTransaction(startMonth: string, endMonth: string) {
+    interface MonthlyAverageCost {
+      month: string;
+      averageCost: number;
+    }
+    
+    async function getMonthlyAverageTransactionCost(startMonth: string, endMonth: string): Promise<MonthlyAverageCost[]> {
+      const monthlyData: Record<string, { totalCost: number; transactionCount: number }> = {};
+    
+      const transactions = await prismaClient.transaction.findMany({
+        select: {
+          date: true,
+          products: {
+            select: {
+              quantity: true,
+              product: {
+                select: {
+                  price: true,
+                },
+              },
+            },
+          },
+        },
+        where: {
+          date: {
+            gte: new Date(startMonth),
+            lte: new Date(endMonth),
+          },
+        },
+      });
+    
+      transactions.forEach((transaction) => {
+        if (transaction.date) {
+          const monthYear = transaction.date.toISOString().slice(0, 7);
+          if (!monthlyData[monthYear]) {
+            monthlyData[monthYear] = { totalCost: 0, transactionCount: 0 };
+          }
+          const transactionCost = transaction.products.reduce((acc, product) => {
+            if (product.product && product.quantity) {
+              return acc + product.product.price * product.quantity;
+            }
+            return acc;
+          }, 0);
+          monthlyData[monthYear].totalCost += transactionCost;
+          monthlyData[monthYear].transactionCount += 1;
+        }
+      });
+    
+      const monthlyAverageCost: MonthlyAverageCost[] = [];
+    
+      for (const monthYear in monthlyData) {
+        const { totalCost, transactionCount } = monthlyData[monthYear];
+        const averageCost = transactionCount === 0 ? 0 : totalCost / transactionCount;
+        monthlyAverageCost.push({
+          month: monthYear,
+          averageCost,
+        });
+      }
+    
+      return monthlyAverageCost;
+    }
+    
+    return await getMonthlyAverageTransactionCost(startMonth, endMonth);
+  }
 }

@@ -36,8 +36,12 @@ const TransactionsPage = () => {
                                     </div> || <div>продукту не існує, або інформація про продукт була видалена</div>
                                 }
                                 <div>{prod.quantity}</div>
+                                <div>{prod.product.price}</div>
                             </div>
                         })}
+                    </div>
+                    <div>
+                        {transaction.totalCost}
                     </div>
                     <div>
                         <button type="button" onClick={() => handleDelete(transaction.id)}>видалити транзакцію</button>

@@ -16,7 +16,8 @@ export type PurchaseResponse = {
 export type TransactionResponse = {
     id: string,
     date: Date,
-    products: PurchaseResponse[]
+    products: PurchaseResponse[],
+    totalCost: number
 }
 
 export interface ITransaction {
