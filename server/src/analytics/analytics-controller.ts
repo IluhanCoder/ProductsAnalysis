@@ -27,4 +27,10 @@ export default new class AnalyticsController {
         const result = await analyticsService.averageTransaction(startMonth, endMonth);
         return res.status(200).send(result);
     }
+
+    async monthlyTransactionCost(req: Request, res: Response) {
+        const {startMonth, endMonth} = req.body;
+        const result = await analyticsService.monthlyTransactionSum(startMonth, endMonth);
+        return res.status(200).send(result);
+    }
 }

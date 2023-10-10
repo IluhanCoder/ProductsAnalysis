@@ -278,4 +278,68 @@ async predictSales(productId: string, monthToPredict: number) {
     
     return await getMonthlyAverageTransactionCost(startMonth, endMonth);
   }
+
+  async monthlyTransactionSum(startMonth: string, endMonth: string) {
+    interface MonthlyTransactionCost {
+      month: string;
+      transactionCostsSum: number;
+    }
+    
+    async function getMonthlyTransactionCosts(startMonth: string, endMonth: string): Promise<MonthlyTransactionCost[]> {
+      const transactions = await prismaClient.transaction.findMany({
+        select: {
+          date: true,
+          products: {
+            select: {
+              quantity: true,
+              product: {
+                select: {
+                  price: true,
+                },
+              },
+            },
+          },
+        },
+        where: {
+          date: {
+            gte: new Date(startMonth),
+            lte: new Date(endMonth),
+          },
+        },
+      });
+    
+      const monthlyData: Record<string, number> = {};
+    
+      transactions.forEach((transaction) => {
+        if (transaction.date) {
+          const monthYear = transaction.date.toISOString().slice(0, 7);
+          const transactionCost = transaction.products.reduce((acc, product) => {
+            if (product.product && product.quantity) {
+              return acc + product.product.price * product.quantity;
+            }
+            return acc;
+          }, 0);
+    
+          if (!monthlyData[monthYear]) {
+            monthlyData[monthYear] = transactionCost;
+          } else {
+            monthlyData[monthYear] += transactionCost;
+          }
+        }
+      });
+    
+      const monthlyTransactionCosts: MonthlyTransactionCost[] = [];
+    
+      for (const monthYear in monthlyData) {
+        monthlyTransactionCosts.push({
+          month: monthYear,
+          transactionCostsSum: monthlyData[monthYear],
+        });
+      }
+    
+      return monthlyTransactionCosts;
+    }
+
+    return getMonthlyTransactionCosts(startMonth, endMonth);
+  }
 }

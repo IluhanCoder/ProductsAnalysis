@@ -36,5 +36,6 @@ router.post('/apriori', authMiddleware, analyticsController.transactionsApriori)
 router.post('/predict', authMiddleware, analyticsController.predictSales);
 router.post('/monthly', authMiddleware, analyticsController.monthlySales);
 router.post('/average-transaction', analyticsController.averageTransaction);
+router.post('/transaction-sum', analyticsController.monthlyTransactionCost);
 
 export default router;
