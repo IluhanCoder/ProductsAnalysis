@@ -1,9 +1,10 @@
-import { Transaction } from '@prisma/client';
+import { Product, Transaction } from '@prisma/client';
 import transactionService from '../transactions/transaction-service';
 import { MonthlySalesPrediction } from './analytics-types';
 import simpleStats from 'simple-statistics';
 import prismaClient from '../prisma-client';
 import { fillMissingMonths, incrementDateByOneMonth } from './analytics-helpers';
+import { IProduct } from '../product/product-types';
 
 export default new class AnalyticsService {
   async transactionsApriori(minSupport: number, maxSupport: number, minConfidence: number, maxConfidence: number, category: string) {
@@ -43,14 +44,20 @@ export default new class AnalyticsService {
       support: number;
       confidence: number;
     }
+
+    interface ExtendedPair {
+      pair: any[];
+      support: number;
+      confidence: number;
+    }
     
-    function findFrequentPairs(
+    async function findFrequentPairs(
       data: string[][], 
       minSupport: number, 
       minConfidence: number,
       maxSupport: number,
       maxConfidence: number
-    ): FrequentPair[] {
+    ) {
         // Step 1: Count item frequencies
         const itemFrequencies = new Map<string, number>();
         for (const transaction of data) {
@@ -108,13 +115,32 @@ export default new class AnalyticsService {
             }
             return b.confidence - a.confidence;
         });
-    
-        return frequentPairsWithInfo;
+
+        let result: ExtendedPair[] = [];
+
+        const getProductData = async (fp: FrequentPair) => {
+          const pair = fp.pair;
+          const product1 = await prismaClient.product.findUnique({where: {id: pair[0]}});
+          const product2 = await prismaClient.product.findUnique({where: {id: pair[1]}});
+          const newData: ExtendedPair = {
+            pair: [
+              product1,
+              product2
+            ],
+            support: fp.support,
+            confidence: fp.confidence
+          }
+          result = [...result, newData];
+        }
+
+        await Promise.all(frequentPairsWithInfo.map(async (fp: FrequentPair) => await getProductData(fp)));
+
+        return result;
     }
     
     const dataset = await fetchTransactions();
     
-    const frequentPairs = findFrequentPairs(dataset, minSupport, minConfidence, maxSupport, maxConfidence);
+    const frequentPairs = await findFrequentPairs(dataset, minSupport, minConfidence, maxSupport, maxConfidence);
     return(frequentPairs);
 
     }

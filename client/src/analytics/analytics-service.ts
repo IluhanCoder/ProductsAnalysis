@@ -10,7 +10,7 @@ export default new class AnalyticsService {
         return `${year}-${month}`;
       }
 
-    async getAnalyticsData (startDate: Date, endDate: Date, ) {
+    async getAnalyticsData (startDate: Date, endDate: Date) {
         const startMonth = this.formatDateToYYYYMM(startDate);
         const endMonth = this.formatDateToYYYYMM(endDate);
         const monthlyTransactionAmount = (await $api.post("/monthly", {startMonth, endMonth})).data;

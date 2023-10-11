@@ -28,6 +28,11 @@ const PredictionPage = () => {
     }, [setPrediction, currentProduct])
 
     return <div>
+        <div>
+            <label>Кількість місяців</label>
+            <input type="number" value={months} onChange={e => setMonths(Number(e.target.value))}/>
+            <button type="button" onClick={() => {if(currentProduct) getData()}}>Встановити</button>
+        </div>
         <ProductsCatalogue onPick={handlePick} isPicker/>
         <PredictionGraph data={ConvertMonthlySalesForGraphs(productSales)}/>
         <PredictionGraph data={ConvertPredictionsForGraphs(prediction)}/>

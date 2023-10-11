@@ -29,7 +29,7 @@ export default new class TransactionService {
           return createdTransaction;
     }
 
-    async fetchTransactions () {
+    async fetchTransactions (filter: {date: {gte: Date, lte: Date}}, productName: string) {
       interface TransactionWithCost {
         id: string;
         date: Date | null;
@@ -46,8 +46,8 @@ export default new class TransactionService {
         totalCost: number;
       }
       
-      async function getTransactionsWithCost(): Promise<TransactionWithCost[]> {
-        const transactions = await prismaClient.transaction.findMany({
+      async function getTransactionsWithCost(filter: {date: {gte: Date, lte: Date}}, productName: string): Promise<TransactionWithCost[]> {
+        let transactions = await prismaClient.transaction.findMany({
           select: {
             id: true,
             date: true,
@@ -63,7 +63,13 @@ export default new class TransactionService {
               },
             },
           },
+          where: {
+            ...filter
+          }
         });
+
+        if(productName) transactions = transactions.filter((transaction: any) =>
+          transaction.products.some((product: any) => product.product.name.toUpperCase().includes(productName.toUpperCase())))
       
         const transactionsWithCost: any[] = [];
       
@@ -88,7 +94,7 @@ export default new class TransactionService {
         return transactionsWithCost;
       }
 
-      return await getTransactionsWithCost();
+      return await getTransactionsWithCost(filter, productName);
     }
 
     async updateTransaction (transactionId: string, newData: Transaction) {

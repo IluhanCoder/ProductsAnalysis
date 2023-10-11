@@ -12,6 +12,7 @@
     "@types/react": "^18.2.20",
     "@types/react-datepicker": "^4.15.1",
     "@types/react-dom": "^18.2.7",
+    "@types/react-time-picker": "^6.0.0",
     "@types/recharts": "^1.8.25",
     "axios": "^1.4.0",
     "buffer": "^6.0.3",

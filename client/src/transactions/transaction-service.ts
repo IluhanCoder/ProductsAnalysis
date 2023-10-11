@@ -6,8 +6,8 @@ export default new class TransactionService {
         await $api.post("/transaction", data);
     }
 
-    async fetchTransactions() {
-        return (await $api.get("/transactions")).data;
+    async fetchTransactions(filter: object, productName: string) {
+        return (await $api.post("/fetch-transactions", {filter, productName})).data;
     }
 
     async deleteTransactions(transactionId: string) {

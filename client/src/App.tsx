@@ -12,6 +12,7 @@ import uk from 'date-fns/locale/uk';
 import TransactionsPage from './transactions/transactions-page';
 import AnalyticsPage from './analytics/analytics-page';
 import PredictionPage from './prediction/prediction-page';
+import PairsPage from './pares/pairs-page';
 registerLocale('ua', uk)
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
           <Route path='transactions' element={<TransactionsPage/>}/>
           <Route path='analytics' element={<AnalyticsPage/>}/>
           <Route path='prediction' element={<PredictionPage/>}/>
+          <Route path='pairs' element={<PairsPage/>}/>
       </Routes>
     </BrowserRouter>
   );

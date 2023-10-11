@@ -17,6 +17,7 @@ export default new class AnalyticsController {
 
     async monthlySales(req: Request, res: Response) {
         const {startMonth, endMonth} = req.body;
+        
         const result = await analyticsService.monthlyTransactions(startMonth, endMonth);
         return res.status(200).send(result);
     }
@@ -29,6 +30,8 @@ export default new class AnalyticsController {
 
     async monthlyTransactionCost(req: Request, res: Response) {
         const {startMonth, endMonth} = req.body;
+        console.log(startMonth);
+        console.log(endMonth);
         const result = await analyticsService.monthlyTransactionSum(startMonth, endMonth);
         return res.status(200).send(result);
     }

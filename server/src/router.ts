@@ -27,7 +27,7 @@ router.delete('/product/:productId', authMiddleware, productController.deletePro
 router.post('/filter-products', authMiddleware, productController.filterProducts);
 
 router.post('/transaction', authMiddleware, transactionController.createTransaction);
-router.get('/transactions', authMiddleware, transactionController.fetchTransactions);
+router.post('/fetch-transactions', authMiddleware, transactionController.fetchTransactions);
 router.put('/transaction/:transactionId', authMiddleware, transactionController.updateTransaction);
 router.delete('/transaction/:transactionId', authMiddleware, transactionController.deleteTransaction);
 router.post('/filter-transactions', authMiddleware, transactionController.filterTransactions);
