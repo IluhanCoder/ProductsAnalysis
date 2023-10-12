@@ -4,6 +4,9 @@ import { useCookies } from "react-cookie";
 import axios from "axios";
 import $api from "../axios-setup";
 import { Link } from "react-router-dom";
+import { buttonStyle } from "../styles/button-styles";
+import UnregistratedPage from "./unregistrated-page";
+import { cardStyle } from "../styles/card-styles";
 
 const WelcomePage = () => {
     const navigate = useNavigate();
@@ -36,12 +39,18 @@ const WelcomePage = () => {
         navigate("/signup");
       };
 
-    return <div>
-        {isAuth && <div>вітаємо, {username ?? "анонім"}
-        <button type="button" onClick={Logout}>вийти</button></div> || 
-        <div>
-            Щоб корстуватися системою, вам необхідно <Link to="/signup">Зареєструватися</Link>, або  <Link to="/login">увійти в обліковий запис</Link> 
-        </div>}
+    return <div className="flex flex-row justify-center">
+      <div className={cardStyle + "flex flex-col justify-center mt-40 px-10 py-4"}>
+        {isAuth && 
+          <div className="text-center flex flex-col gap-3">
+            <div className="text-xl">вітаємо, {username ?? "анонім"}</div>
+            <div className="mb-2">
+              <button type="button" className={buttonStyle} onClick={Logout}>вийти з облікового запису</button>
+            </div>
+          </div> 
+        || 
+        <UnregistratedPage/>}
+      </div>
     </div>
 }
 

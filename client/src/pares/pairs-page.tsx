@@ -1,6 +1,7 @@
 import {useState, useEffect} from "react";
 import { PairsResponse } from "./pairs-types";
 import pairsService from "./pairs-service";
+import { Buffer } from "buffer";
 
 const PairsPage = () => {
     const [minSupport, setMinSupport] = useState<number>(0.1);
@@ -13,6 +14,10 @@ const PairsPage = () => {
     const handleSubmit = async () => {
         const result = await pairsService.getPares(minSupport, maxSupport, minConfidence, maxConfidence, category);
         setResults(result);
+    }
+
+    const convertImage = (image: any) => {
+        return `data:image/jpeg;base64,${Buffer.from(image.data).toString('base64')}`;
     }
 
     return <div>
@@ -38,15 +43,42 @@ const PairsPage = () => {
                     <label>Категорія товару</label>
                     <input type="text" value={category} onChange={e => setCategory(e.target.value)}/>
                 </div>
-                <button onClick={handleSubmit}>Підтвердити</button>
+                <button type="button" onClick={handleSubmit}>Підтвердити</button>
             </form>
         </div>
         <div>
+            <table>
+            <tr>
+                <th>Продукт 1</th>
+                <th>Продукт 2</th>
+                <th>Підтримка</th>
+                <th>достовірність</th>
+            </tr>
             {
-                results.map((result) => {
-                    return <div>{JSON.stringify(result)}</div>
+                results.map((result: PairsResponse) => {
+                    return <tr>
+                        <td>
+                            <div>
+                                <div>{result.pair[0].name}</div>
+                                <div><img height={70} src={convertImage(result.pair[0].image)}/></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <div>{result.pair[1].name}</div>
+                                <div><img height={70} src={convertImage(result.pair[1].image)}/></div>
+                            </div>
+                        </td>                 
+                        <td>
+                            <div>{result.support}</div>
+                        </td>
+                        <td>
+                            <div>{result.confidence}</div>
+                        </td>
+                    </tr>
                 })
             }
+            </table>
         </div>
     </div>
 }

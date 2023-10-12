@@ -15,10 +15,10 @@ const CharacteristicsMapper = (params: Params) => {
         onRemove(temp);
     }
 
-    return <div>
+    return <div className="flex flex-col">
         {
             characteristics.map((item: Characteristic) => {
-                return <div key={item.key}>
+                return <div key={item.key} className="flex justify-between">
                         <div>{
                                 item.key
                             }</div>

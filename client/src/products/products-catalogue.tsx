@@ -4,6 +4,10 @@ import productService from "./product-service";
 import { Buffer } from "buffer";
 import ProductSearchBar from "./product-search-bar";
 import CharacteristicsMapper from "./characteristics-mapper";
+import { cardStyle } from "../styles/card-styles";
+import { deleteButtonStyle } from "../styles/button-styles";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 type LocalParams = {
     isPicker?: boolean,
@@ -13,7 +17,7 @@ type LocalParams = {
 const ProductsCatalogue = (params: LocalParams) => {
     const {isPicker, onPick, deleteAvailable} = params;
 
-    const [products, setProducts] = useState<Product[]>([]);
+    const [products, setProducts] = useState<Product[]>();
 
     async function fetchProducts () {
         const fetchResult: Product[] = await productService.fetchProducts();
@@ -25,51 +29,73 @@ const ProductsCatalogue = (params: LocalParams) => {
     }
 
     const handleFilter = async (filter: ProductFilter) => {
+        setProducts(undefined);
         const newProducts = await productService.filterProducts(filter);
         setProducts(newProducts);
     }
 
     const handleDelete = async (productId: string) => {
         await productService.deleteProduct(productId);
+        toast.success("товар успішно видалено");
+        await fetchProducts();
     }
 
     useEffect(() => {
         fetchProducts();
     }, [])
 
-    return <div>
+    return <div className="flex flex-col">
+        <ToastContainer/>
         <div>
             <ProductSearchBar onSubmit={handleFilter}/>
         </div>
-        <div>
+        { products && ( products.length > 0 && <div className="grid grid-cols-2 gap-4 px-6 py-2">
         {
             products.map((product: Product) => {
-                return <div key={product.id}>
+                return <div key={product.id} className={cardStyle + "flex flex-row p-6"}>
                     <div>
-                        <img src={convertImage(product.image)}/>
-                    </div>
-                    <div>{product.name}</div>
-                    <div>{product.category}</div>
-                    <div>{product.description}</div>
-                    <div>{`${product.price} грн`}</div>
-                    <div>
-                        <CharacteristicsMapper characteristics={product.characteristics}/>
-                    </div>
-                    { isPicker &&
-                        <div>
-                            <button type="button" onClick={() => onPick!(product)}>обрати товар</button>
+                        <div className="flex justify-center">
+                            <img className="w-48" src={convertImage(product.image)}/>
                         </div>
-                    }
-                    {
-                        deleteAvailable &&
-                        <div>
-                            <button type="button" onClick={() => handleDelete(product.id)}>видалити продукт</button>
-                        </div> 
-                    }
+                    </div>
+                    <div className="flex flex-col grow px-6">
+                        <div className="flex justify-center text-xl font-bold">{product.name}</div>
+                        <div className="flex flex-row gap-3 mt-3">
+                            <div> категорія: </div>
+                            <div> {product.category} </div>
+                        </div>
+                        <div className="flex flex-row gap-2 my-2">
+                            <div className="text-center"> опис: </div>
+                            <div className="text-sm mt-0.5"> {product.description} </div>
+                        </div>
+                        <div className="flex flex-col">
+                            <div className="flex justify-center text-xl">Характеристики:</div>
+                            <CharacteristicsMapper characteristics={product.characteristics}/>
+                        </div>
+                        { isPicker &&
+                            <div>
+                                <button type="button" onClick={() => onPick!(product)}>обрати товар</button>
+                            </div>
+                        }
+                        {
+                            deleteAvailable &&
+                            <div className="flex justify-center mt-6">
+                                <button className={deleteButtonStyle} type="button" onClick={() => handleDelete(product.id)}>видалити товар</button>
+                            </div> 
+                        }
+                    </div>
+                    <div>
+                        
+                    </div>
                 </div>
             })
         }
-        </div>
+        </div> || <div className="flex justify-center">
+                <div className="mt-16 text-center text-3xl">Товари відсутні</div>
+            </div>) || <div className="flex justify-center">
+                <div className="mt-16 text-center text-3xl">Підвантаження товарів...</div>
+            </div>
+    }
     </div>
 }
 

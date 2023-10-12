@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 interface LocalParams {
     onChange?: (hours: string, minutes: string) => void,
-    defaultHour: string
+    defaultHour: string,
 }
 
 const TimePicker = (params: LocalParams) => {

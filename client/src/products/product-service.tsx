@@ -12,6 +12,7 @@ export default new class ProductService {
     }
 
     async newProduct (product: IProduct, image: File) {
+        console.log(product);
         const formData = new FormData();
         formData.append('file', image);
         formData.append('product', JSON.stringify(product));

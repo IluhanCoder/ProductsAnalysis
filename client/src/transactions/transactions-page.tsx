@@ -8,17 +8,16 @@ import convertTime from "./convert-time";
 const TransactionsPage = () => {
     const [transactions, setTransactions] = useState<TransactionResponse[]>([]);
     const [productName, setProductName] = useState<string>("");
-    const [startDate, setStartDate] = useState<Date>(new Date("2023-02-01 00:00"));
-    const [endDate, setEndDate] = useState<Date>(new Date("2023-12-01 23:00"));
+    const [startDate, setStartDate] = useState<Date>(new Date("2023-01-02T00:00:00"));
+    const [endDate, setEndDate] = useState<Date>(new Date("2023-12-01T23:00:00"));
 
-    const filterTransactions = async (stDate?: Date, enDate?: Date) => {
+    const filterTransactions = async (stDate: Date, enDate: Date) => {
         const dateFilter = {
             date: {
                 gte: stDate,
                 lte: enDate
             }
         }
-        console.log(dateFilter);
         const result = await transactionService.fetchTransactions(dateFilter, productName);
         setTransactions([...result]);
     }
@@ -105,10 +104,10 @@ const TransactionsPage = () => {
                                 {prod.product && 
                                     <div>  
                                         <div>{prod.product.name}</div>
+                                        <div>{prod.quantity}</div>
+                                        <div>{prod.product.price}</div>
                                     </div> || <div>продукту не існує, або інформація про продукт була видалена</div>
                                 }
-                                <div>{prod.quantity}</div>
-                                <div>{prod.product.price}</div>
                             </div>
                         })}
                     </div>

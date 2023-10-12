@@ -1,6 +1,8 @@
 import { useState } from "react";
 import RangePicker from "./search-bar-components/range-picker";
 import { ProductFilter } from "./product-types";
+import { inputStyle } from "../styles/form-styles";
+import { buttonStyle } from "../styles/button-styles";
 
 type LocalParams = {
     onSubmit: (filter: ProductFilter) => {}
@@ -32,20 +34,23 @@ const ProductSearchBar = (params: LocalParams) => {
     }
 
     return <div>
-        <form>
-            <div>
-                <label>Назва товару</label>
-                <input type="text" value={name} onChange={e => setName(e.target.value)}/>
+        <form className="flex justify-center p-3 gap-3">
+            <div className="font-bold mr-3">
+                Фільтрація:
             </div>
-            <div>
-                <label>Категорія</label>
-                <input type="text" value={category} onChange={e => setCategory(e.target.value)}/>
+            <div className="flex gap-1">
+                <label>Назва товару:</label>
+                <input className={inputStyle} type="text" value={name} onChange={e => setName(e.target.value)}/>
             </div>
-            <div>
-                <label>Діaпазон ціни:</label>
+            <div className="flex gap-1">
+                <label>Категорія:</label>
+                <input className={inputStyle} type="text" value={category} onChange={e => setCategory(e.target.value)}/>
+            </div>
+            <div className="flex gap-2">
+                <label>Діaпазон ціни (грн):</label>
                 <RangePicker minState={minState} maxState={maxState}/>
             </div>
-            <button type="button" onClick={handleSubmit}>знайти</button>
+            <button className={buttonStyle} type="button" onClick={handleSubmit}>знайти</button>
         </form>
     </div>
 }

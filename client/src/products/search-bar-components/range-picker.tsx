@@ -1,3 +1,5 @@
+import { inputStyle } from "../../styles/form-styles";
+
 type LocalParams = {
     minState: [number, React.Dispatch<React.SetStateAction<number>>],
     maxState: [number, React.Dispatch<React.SetStateAction<number>>]
@@ -19,9 +21,15 @@ const RangePicker = (params: LocalParams) => {
         if(newValue < minStateValue) setMaxState(minStateValue + 1);
     }
 
-    return <div>
-        <input type="number" value={minStateValue} onChange={e => setMinState(Number(e.target.value))} onBlur={handleMinBlur}/>
-        <input type="number" value={maxStateValue} onChange={e => setMaxState(Number(e.target.value))} onBlur={handleMaxBlur}/>
+    return <div className="flex gap-2">
+        <div className="flex gap-1">
+            <label>від</label>
+            <input className={inputStyle + "w-16"} type="number" value={minStateValue} onChange={e => setMinState(Number(e.target.value))} onBlur={handleMinBlur}/>
+        </div>
+        <div className="flex gap-1">
+            <label>до</label>
+            <input className={inputStyle + "w-16"} type="number" value={maxStateValue} onChange={e => setMaxState(Number(e.target.value))} onBlur={handleMaxBlur}/>
+        </div>
     </div>
 }
 

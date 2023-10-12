@@ -25,8 +25,8 @@ export default new class ProductService {
                     image: data.image,
                     characteristics: {
                       createMany: {
-                        data: data.characteristics.map(({ label, value }: Characteristic) => ({
-                          key: label,
+                        data: data.characteristics.map(({ key, value }: Characteristic) => ({
+                          key: key,
                           value: value,
                         })),
                       },
