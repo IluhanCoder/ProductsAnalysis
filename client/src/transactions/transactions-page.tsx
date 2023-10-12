@@ -4,9 +4,15 @@ import transactionService from "./transaction-service";
 import ReactDatePicker from "react-datepicker";
 import TimePicker from "./time-picker";
 import convertTime from "./convert-time";
+import { cardStyle } from "../styles/card-styles";
+import { inputStyle } from "../styles/form-styles";
+import { buttonStyle, deleteButtonStyle } from "../styles/button-styles";
+import DateFormater from "../misc/date-formatter";
+import { ToastContainer, toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 const TransactionsPage = () => {
-    const [transactions, setTransactions] = useState<TransactionResponse[]>([]);
+    const [transactions, setTransactions] = useState<TransactionResponse[]>();
     const [productName, setProductName] = useState<string>("");
     const [startDate, setStartDate] = useState<Date>(new Date("2023-01-02T00:00:00"));
     const [endDate, setEndDate] = useState<Date>(new Date("2023-12-01T23:00:00"));
@@ -24,6 +30,8 @@ const TransactionsPage = () => {
 
     const handleDelete = async (transactionId: string) => {
         await transactionService.deleteTransactions(transactionId);
+        toast.success("транзакцію успішно видалено");
+        filterTransactions(startDate, endDate);
     }
 
     const handleStart = (newDate: Date) => {
@@ -71,55 +79,85 @@ const TransactionsPage = () => {
         filterTransactions(startDate, endDate);
     }, [])
 
-    return <div>
-        <div>
-            <div>
-                <label>Діопазон дати і часу</label>
-                <div>
-                    <label>Від:</label>
-                    <ReactDatePicker selected={startDate} onChange={handleStart} locale={"ua"}/>
-                    <TimePicker onChange={handleStartTimeChange} defaultHour="00"/>
+    return <div className="flex flex-col">
+        <ToastContainer/>
+        <div className="flex justify-center py-3">
+            <Link to="/new-transaction" className={buttonStyle}>Створити транзацію</Link>
+        </div>
+        <div className="flex justify-center">
+            <div className={"flex flex-col justify-center gap-2 p-4 " + cardStyle}>
+                <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-2">
+                        <label className="text-center">Діaпазон дати і часу:</label>
+                        <div className="flex gap-4">
+                            <div className="flex gap-2">
+                                <label>Від:</label>
+                                <ReactDatePicker dateFormat="dd/MM/yyyy" className={inputStyle} selected={startDate} onChange={handleStart} locale={"ua"}/>
+                                <TimePicker onChange={handleStartTimeChange} defaultHour="00"/>
+                            </div>
+                            <div className="flex gap-2">
+                                <label>До:</label>
+                                <ReactDatePicker dateFormat="dd/MM/yyyy" className={inputStyle} selected={endDate} onChange={handleEnd} locale={"ua"}/>
+                                <TimePicker onChange={handleEndTimeChange} defaultHour="23"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex justify-center gap-2">
+                        <label>Назва продукту в транзакції:</label>
+                        <input className={inputStyle} type="text" value={productName} onChange={e => setProductName(e.target.value)}/>
+                    </div>
                 </div>
-                <div>
-                    <label>До:</label>
-                    <ReactDatePicker selected={endDate} onChange={handleEnd} locale={"ua"}/>
-                    <TimePicker onChange={handleEndTimeChange} defaultHour="23"/>
+                <div className="flex justify-center">
+                    <button type="button" className={buttonStyle} onClick={() => filterTransactions(startDate, endDate)}>знайти</button>
                 </div>
             </div>
-            <label>Назва продукту:</label>
-            <input type="text" value={productName} onChange={e => setProductName(e.target.value)}/>
-            <button type="button" onClick={() => filterTransactions(startDate, endDate)}>знайти</button>
         </div>
-        {   
-            transactions.map((transaction: TransactionResponse) => {
-                return <div>
-                    <div>
-                        {
-                            new Date(transaction.date).toString()
-                        }
-                    </div>
-                    <div>
-                        {transaction.products.map((prod: PurchaseResponse) => {
-                            return <div>
-                                {prod.product && 
-                                    <div>  
-                                        <div>{prod.product.name}</div>
-                                        <div>{prod.quantity}</div>
-                                        <div>{prod.product.price}</div>
-                                    </div> || <div>продукту не існує, або інформація про продукт була видалена</div>
-                                }
+        <div className="flex flex-col p-4">
+            <div className="flex justify-center text-2xl">Транзакції:</div>
+                { transactions && (transactions.length > 0 && <div className="grid grid-cols-2 gap-4 p-4">
+                {   
+                    transactions.map((transaction: TransactionResponse) => {
+                        return <div className={cardStyle + "p-4 flex flex-col"}>
+                            <div className="flex justify-center font-bold pb-2">
+                                <div>
+                                    {
+                                        <DateFormater value={new Date(transaction.date)} dayOfWeek/> 
+                                    }
+                                </div>
                             </div>
-                        })}
-                    </div>
-                    <div>
-                        {transaction.totalCost}
-                    </div>
-                    <div>
-                        <button type="button" onClick={() => handleDelete(transaction.id)}>видалити транзакцію</button>
-                    </div>
-                </div>
-            })
-        }
+                            <div className="flex justify-center">
+                                <div className="flex flex-col gap-2">
+                                    <div className="flex justify-center">Куплені товари:</div>
+                                    <div className="flex flex-col bg-gray-100 justify-center gap-3">
+                                        {transaction.products.map((prod: PurchaseResponse) => {
+                                            return <div className="flex w-full bg-gray-300 rounded p-2 shadow-md ">
+                                                {prod.product && 
+                                                    <div className="flex gap-3 py-1 px-4">  
+                                                        <div>{prod.product.name}</div>
+                                                        <div>Кількість: {prod.quantity}</div>
+                                                        <div>Вартість: {prod.product.price} грн</div>
+                                                    </div> || <div>продукту не існує, або інформація про продукт була видалена</div>
+                                                }
+                                            </div>
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex justify-center gap-2 pt-4">
+                                Сумарна вартість чеку: <label className="font-bold">{transaction.totalCost}</label>
+                            </div>
+                            <div className="flex justify-center pt-3">
+                                <button className={deleteButtonStyle} type="button" onClick={() => handleDelete(transaction.id)}>видалити транзакцію</button>
+                            </div>
+                        </div>
+                    })
+                }
+            </div> || <div className="flex justify-center">
+                <div className="mt-16 text-center text-3xl">Транзакції відсутні</div>
+            </div>) || <div className="flex justify-center">
+                    <div className="mt-16 text-center text-3xl">Підвантаження транзакцій...</div>
+                </div>} 
+        </div>
     </div>
 }
 

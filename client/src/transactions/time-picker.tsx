@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { inputStyle } from '../styles/form-styles';
 
 interface LocalParams {
     onChange?: (hours: string, minutes: string) => void,
@@ -26,7 +27,7 @@ const TimePicker = (params: LocalParams) => {
 
   return (
     <div className="time-picker">
-      <select value={selectedHour} onChange={handleHourChange}>
+      <select className={inputStyle} value={selectedHour} onChange={handleHourChange}>
         {hours.map((hour) => (
           <option key={hour} value={hour}>
             {hour}
@@ -34,7 +35,7 @@ const TimePicker = (params: LocalParams) => {
         ))}
       </select>
       :
-      <select value={selectedMinute} onChange={handleMinuteChange}>
+      <select className={inputStyle} value={selectedMinute} onChange={handleMinuteChange}>
         {minutes.map((minute) => (
           <option key={minute} value={minute}>
             {minute}

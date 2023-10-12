@@ -3,9 +3,9 @@ import ProductsCatalogue from "./products-catalogue";
 import { Link } from "react-router-dom";
 
 const ProductsPage = () => {
-    return <div className="flex flex-col gap-5 pt-4">
-        <div className="flex flex-col gap-4">
-            <div className="flex justify-center text-5xl font-bold">
+    return <div className="flex flex-col gap-5 pt-2">
+        <div className="flex flex-col gap-2">
+            <div className="flex justify-center text-3xl font-bold">
                 товари
             </div>
             <div className="flex justify-center">

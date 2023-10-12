@@ -44,10 +44,50 @@ const PredictionPage = () => {
         </div>
         <div className="flex justify-center">
             <div className="flex flex-col p-4">
-                {currentProduct && <div className="text-center text-2xl py-2">Продажі товару "{currentProduct?.name}" за поточний рік:</div>}
-                <PredictionGraph data={ConvertMonthlySalesForGraphs(productSales)}/>
-                {currentProduct && <div className="text-center text-2xl py-2">Прогноз продажів товару "{currentProduct?.name}" у встановлену к-сть місяців:</div>}
-                <PredictionGraph data={ConvertPredictionsForGraphs(prediction)}/>
+                <div className="flex justify-center">
+                    <div className="flex flex-col">
+                        {currentProduct && <div className="text-center text-2xl py-2">Продажі товару "{currentProduct?.name}" за поточний рік:</div>}
+                        <PredictionGraph data={ConvertMonthlySalesForGraphs(productSales)}/>
+                        {currentProduct && <div className="text-center text-2xl py-2">Прогноз продажів товару "{currentProduct?.name}" у встановлену к-сть місяців:</div>}
+                        <PredictionGraph data={ConvertPredictionsForGraphs(prediction)}/>
+                    </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        {currentProduct && <div className="text-center text-2xl py-2">Таблиця продажу товару "{currentProduct?.name}" за поточний рік:</div>}
+                        <table className="w-full">
+                            <tr>
+                                <th className="border-2 text-center">Місяць</th>
+                                <th className="border-2 text-center">Кількість проданого товару</th>
+                            </tr>
+                            {
+                                productSales.map((unit: MonthlySalesResponseUnit) => {
+                                    return <tr>
+                                        <td className="border-2 text-center">{unit.month}</td>
+                                        <td className="border-2 text-center">{unit.productSales}</td>
+                                    </tr>
+                                })
+                            }
+                        </table>
+                    </div>
+                    <div>
+                        {currentProduct && <div className="text-center text-2xl py-2">Таблиця прогнозу продажу товару "{currentProduct?.name}" за поточний рік:</div>}
+                        <table className="w-full">
+                            <tr>
+                                <th className="border-2 text-center">Місяць</th>
+                                <th className="border-2 text-center">Кількість проданого товару</th>
+                            </tr>
+                            {
+                                prediction.map((unit: PredictionResponseUnit) => {
+                                    return <tr>
+                                        <td className="border-2 text-center">{unit.month}</td>
+                                        <td className="border-2 text-center">{Math.floor(unit.sales)}</td>
+                                    </tr>
+                                })
+                            }
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

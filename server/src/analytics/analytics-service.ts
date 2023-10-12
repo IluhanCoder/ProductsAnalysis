@@ -32,8 +32,8 @@ export default new class AnalyticsService {
       async function fetchTransactions(): Promise<string[][]> {
           const transactionData: string[][] = [];
           transactions.forEach((transaction: any) => {
-            let items: string[] = transaction.products.filter((product: any) => !category || product.product.category === category);
-            items = items.map((product: any) => product.product.id);
+            let items: string[] = transaction.products.filter((product: any) => {if(!product.product) return false; else return !category || product.product!.category === category});
+            items = items.map((product: any) => {if(product.product) return product.product.id});
             if(items.length > 0) transactionData.push(items);
           });
           return transactionData;

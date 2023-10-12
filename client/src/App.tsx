@@ -12,7 +12,7 @@ import uk from 'date-fns/locale/uk';
 import TransactionsPage from './transactions/transactions-page';
 import AnalyticsPage from './analytics/analytics-page';
 import PredictionPage from './prediction/prediction-page';
-import PairsPage from './pares/pairs-page';
+import PairsPage from './pairs/pairs-page';
 import { Link } from 'react-router-dom';
 import { linkStyle } from './styles/link-styles';
 registerLocale('ua', uk)
