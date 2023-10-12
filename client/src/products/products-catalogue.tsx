@@ -5,7 +5,7 @@ import { Buffer } from "buffer";
 import ProductSearchBar from "./product-search-bar";
 import CharacteristicsMapper from "./characteristics-mapper";
 import { cardStyle } from "../styles/card-styles";
-import { deleteButtonStyle } from "../styles/button-styles";
+import { buttonStyle, deleteButtonStyle } from "../styles/button-styles";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -49,34 +49,40 @@ const ProductsCatalogue = (params: LocalParams) => {
         <div>
             <ProductSearchBar onSubmit={handleFilter}/>
         </div>
-        { products && ( products.length > 0 && <div className="grid grid-cols-2 gap-4 px-6 py-2">
+        { products && ( products.length > 0 && <div className={(isPicker)? "overflow-auto max-h-72 ":""}><div className={`grid ${(isPicker)? "grid-cols-4" : "grid-cols-2"} gap-4 px-6 py-2`}>
         {
             products.map((product: Product) => {
-                return <div key={product.id} className={cardStyle + "flex flex-row p-6"}>
-                    <div>
-                        <div className="flex justify-center">
-                            <img className="w-48" src={convertImage(product.image)}/>
-                        </div>
+                return <div key={product.id} className={cardStyle + ` flex flex-row ${(isPicker) ? "p-2 " : "p-6"}`}>
+                    <div className="flex flex-col justify-center">
+                        {!isPicker && <div className="flex justify-center">
+                            <img className="w-48 rounded shadow-md" src={convertImage(product.image)}/>
+                        </div>}
                     </div>
-                    <div className="flex flex-col grow px-6">
+                    <div className={`flex flex-col grow px-6`}>
                         <div className="flex justify-center text-xl font-bold">{product.name}</div>
-                        <div className="flex flex-row gap-3 mt-3">
+                        <div className={`flex flex-row gap-3 ${(isPicker) ? "mt-1 justify-center" : "mt-3"} `}>
                             <div> категорія: </div>
                             <div> {product.category} </div>
                         </div>
-                        <div className="flex flex-row gap-2 my-2">
+                        {!isPicker && <div className="flex flex-row gap-2 my-2">
                             <div className="text-center"> опис: </div>
                             <div className="text-sm mt-0.5"> {product.description} </div>
-                        </div>
-                        <div className="flex flex-col">
+                        </div>}
+                        {!isPicker && <div className="flex flex-col">
                             <div className="flex justify-center text-xl">Характеристики:</div>
                             <CharacteristicsMapper characteristics={product.characteristics}/>
-                        </div>
+                        </div>}
                         { isPicker &&
-                            <div>
-                                <button type="button" onClick={() => onPick!(product)}>обрати товар</button>
+                            <div className={`flex justify-center ${(isPicker) ? "mt-2" : "mt-3"}`}>
+                                <button className={buttonStyle} type="button" onClick={() => onPick!(product)}>обрати товар</button>
                             </div>
                         }
+                        {!isPicker && <div className="flex flex-row justify-center">
+                            <div className="text-xl flex gap-2">
+                                <label>ціна</label>
+                                <label className="font-bold">{product.price} грн</label>
+                            </div>
+                        </div>}
                         {
                             deleteAvailable &&
                             <div className="flex justify-center mt-6">
@@ -84,12 +90,9 @@ const ProductsCatalogue = (params: LocalParams) => {
                             </div> 
                         }
                     </div>
-                    <div>
-                        
-                    </div>
                 </div>
             })
-        }
+        }</div>
         </div> || <div className="flex justify-center">
                 <div className="mt-16 text-center text-3xl">Товари відсутні</div>
             </div>) || <div className="flex justify-center">

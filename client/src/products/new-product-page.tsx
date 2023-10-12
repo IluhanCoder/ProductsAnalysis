@@ -2,10 +2,18 @@ import { useEffect, useState } from "react";
 import { Characteristic, IProduct } from "./product-types";
 import CharacteristicsMapper from "./characteristics-mapper";
 import productService, { newProductRequestData } from "./product-service";
+import { cardStyle } from "../styles/card-styles";
+import { buttonStyle, deleteButtonStyle } from "../styles/button-styles";
+import { inputStyle } from "../styles/form-styles";
+import { ToastContainer, toast } from "react-toastify";
 
 const NewProductPage = () => {
+    const defaultImage = process.env.REACT_APP_IMAGE_PLACEHOLDER!;
+
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
     const [avatar, setAvatar] = useState<File | undefined>();
-    const [imgURL, setImgURL] = useState<string>(process.env.REACT_APP_IMAGE_PLACEHOLDER!);
+    const [imgURL, setImgURL] = useState<string>(defaultImage);
 
     const [name, setName] = useState<string>("");
     const [category, setCategory] = useState<string>("");
@@ -63,6 +71,17 @@ const NewProductPage = () => {
         setAvatar(undefined);
     }
 
+    const dropInput = () => {
+        setAvatar(undefined);
+        setImgURL(defaultImage);
+        setName("");
+        setCategory("");
+        setDescription("");
+        setPrice(0);
+        setCharacteristics([]);
+        setCurrentCharacteristic(defaultCharacteristic);
+    }
+
     const handleSubmit = async () => {
         const newProduct: IProduct = {
             name,
@@ -71,67 +90,92 @@ const NewProductPage = () => {
             price,
             characteristics
         }
+        setIsLoading(true);
         await productService.newProduct(newProduct, avatar!);
+        toast.success("товар було успішно створено");
+        dropInput();
+        setIsLoading(false);
     }
 
     return <>
-        <div>
-            <form>
-                <div>
+        <ToastContainer/>
+        {!isLoading && <div className="flex flex-col py-4 gap-4">
+            <div className="text-3xl text-center">Додання інформації про продукт</div>
+            <div className="flex justify-center">
+                <form className={cardStyle + "flex flex-col p-4"}>
                     <div>
-                        <img src={imgURL}/>
+                        <div className="flex justify-center pb-4">
+                            <img className="w-72" src={imgURL}/>
+                        </div>
+                        <div className="flex justify-center py-2">
+                            <div className="flex flex-col gap-2">
+                                <div className="flex justify-center gap-3">
+                                    <label>Зображення продукту:</label>
+                                    <input
+                                        type="file"
+                                        onChange={(e) => handleNewImage(e.target.files)}
+                                        id="fileInput"
+                                    />
+                                </div>
+                                <div className="flex justify-center">
+                                    <button type="button" className={deleteButtonStyle} onClick={dropImage}>Прибрати зображення</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <label>Зображення продукту:</label>
-                    <input
-                        type="file"
-                        onChange={(e) => handleNewImage(e.target.files)}
-                    />
-                    <button type="button" onClick={dropImage}>Прибрати зображення</button>
-                </div>
-                <div>
-                    <label>Категорія:</label>
-                    <input type="text"
-                        value={category}
-                        onChange={(e) => setCategory(e.target.value)}></input>
-                </div>
-                <div>
-                    <label>Назва:</label>
-                    <input type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}></input>
-                </div>
-                <div>
-                    <label>Опис:</label>
-                    <input type="text"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}></input>
-                </div>
-                <div>
-                    <label>Ціна:</label>
-                    <input type="number"
-                        value={price}
-                        onChange={(e) => setPrice(Number(e.target.value))}></input>
-                </div>
-                <div>
-                    <div>Характеристики:</div>
-                    <div>
-                        <label>Ключ</label>
-                        <input type="text" value={currentCharacteristic?.key} onChange={
-                            (e) => handleCharacteristicLabel(e.target.value)
-                        }/>
-                        <label>Значення</label>
-                        <input type="text" value={currentCharacteristic?.value} onChange={
-                            (e) => handleCharacteristicValue(e.target.value)
-                        }/>
-                        <button type="button" onClick={handleCharacteristicPush}>додати</button>
+                    <div className="flex flex-col gap-2 py-5">
+                        <div className="flex gap-2 justify-center">
+                            <label>Назва:</label>
+                            <input type="text" className={inputStyle + " w-72"}
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}></input>
+                        </div>
+                        <div className="flex gap-2 justify-center">
+                            <label>Категорія:</label>
+                            <input className={inputStyle + " w-72"} type="text"
+                                value={category}
+                                onChange={(e) => setCategory(e.target.value)}></input>
+                        </div>
+                        <div className="flex gap-2 justify-center">
+                            <label>Опис:</label>
+                            <input type="text"
+                                value={description} className={inputStyle + " w-72"}
+                                onChange={(e) => setDescription(e.target.value)}></input>
+                        </div>
+                        <div className="flex gap-2 justify-center">
+                            <label>Ціна:</label>
+                            <input type="number"
+                                value={price} className={inputStyle + " w-72"}
+                                onChange={(e) => setPrice(Number(e.target.value))}></input>
+                        </div>
+                        <div className="flex flex-col">
+                            <div className="text-center text-xl py-2">Характеристики:</div>
+                            <div className="flex gap-3">
+                                <div className="flex gap-2">
+                                    <label>Ключ</label>
+                                    <input className={inputStyle + " w-36"} type="text" value={currentCharacteristic?.key} onChange={
+                                        (e) => handleCharacteristicLabel(e.target.value)
+                                    }/>
+                                </div>
+                                <div className="flex gap-2">
+                                    <label>Значення</label>
+                                    <input className={inputStyle} type="text" value={currentCharacteristic?.value} onChange={
+                                        (e) => handleCharacteristicValue(e.target.value)
+                                    }/>
+                                </div>
+                                <button className={buttonStyle} type="button" onClick={handleCharacteristicPush}>додати</button>
+                            </div>
+                            <CharacteristicsMapper characteristics={characteristics} onRemove={(newValue: Characteristic[]) => {
+                                setCharacteristics([...newValue]);
+                            }}/>
+                        </div>
                     </div>
-                    <CharacteristicsMapper characteristics={characteristics} onRemove={(newValue: Characteristic[]) => {
-                        setCharacteristics([...newValue]);
-                    }}/>
-                </div>
-                <button type="button" onClick={handleSubmit}>Створити товар</button>
-            </form>
-        </div>
+                    <div className="flex justify-center">
+                        <button className={buttonStyle} type="button" onClick={handleSubmit}>Створити товар</button>
+                    </div>
+                </form>
+            </div>
+        </div> || <div className="flex justify-center p-48 text-4xl font-bold">обробка запиту...</div>}
     </>
 }
 

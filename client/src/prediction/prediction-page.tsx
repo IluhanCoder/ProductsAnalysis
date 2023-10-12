@@ -5,6 +5,9 @@ import PredictionGraph from "./prediction-graph";
 import { ConvertMonthlySalesForGraphs, ConvertPredictionsForGraphs } from "./predictions-helpers";
 import ProductsCatalogue from "../products/products-catalogue";
 import { Product } from "../products/product-types";
+import { cardStyle } from "../styles/card-styles";
+import { inputStyle } from "../styles/form-styles";
+import { buttonStyle } from "../styles/button-styles";
 
 const PredictionPage = () => {
     const [prediction, setPrediction] = useState<PredictionResponseUnit[]>([]);
@@ -28,14 +31,25 @@ const PredictionPage = () => {
     }, [setPrediction, currentProduct])
 
     return <div>
-        <div>
-            <label>Кількість місяців</label>
-            <input type="number" value={months} onChange={e => setMonths(Number(e.target.value))}/>
-            <button type="button" onClick={() => {if(currentProduct) getData()}}>Встановити</button>
+        <div className="flex flex-col gap-2 py-4 border-2 m-2">
+            <div className="text-center text-2xl">Оберіть товар, який ви хочете проаналізувати:</div>
+            <ProductsCatalogue onPick={handlePick} isPicker/>
         </div>
-        <ProductsCatalogue onPick={handlePick} isPicker/>
-        <PredictionGraph data={ConvertMonthlySalesForGraphs(productSales)}/>
-        <PredictionGraph data={ConvertPredictionsForGraphs(prediction)}/>
+        <div className="flex justify-center">
+            <div className={`flex justify-center py-2 px-6 gap-2 ` + cardStyle}>
+                <label>Кількість місяців</label>
+                <input className={"w-20 " + inputStyle} type="number" value={months} onChange={e => setMonths(Number(e.target.value))}/>
+                <button className={buttonStyle} type="button" onClick={() => {if(currentProduct) getData()}}>Встановити</button>
+            </div>
+        </div>
+        <div className="flex justify-center">
+            <div className="flex flex-col p-4">
+                {currentProduct && <div className="text-center text-2xl py-2">Продажі товару "{currentProduct?.name}" за поточний рік:</div>}
+                <PredictionGraph data={ConvertMonthlySalesForGraphs(productSales)}/>
+                {currentProduct && <div className="text-center text-2xl py-2">Прогноз продажів товару "{currentProduct?.name}" у встановлену к-сть місяців:</div>}
+                <PredictionGraph data={ConvertPredictionsForGraphs(prediction)}/>
+            </div>
+        </div>
     </div>
 }
 

@@ -12,11 +12,12 @@ const WelcomePage = () => {
     const navigate = useNavigate();
     const [cookies, setCookie, removeCookie] = useCookies<any>([]);
     const [username, setUsername] = useState<string | undefined>();
-    const [isAuth, setIsAuth] = useState<boolean>(false);
+    const [isAuth, setIsAuth] = useState<boolean>();
 
     useEffect(() => {
         const verifyCookie = async () => {
           if (!cookies.token) {
+            setIsAuth(false);
             return;
           }
           const { data } = await $api.post(
@@ -39,7 +40,7 @@ const WelcomePage = () => {
         navigate("/signup");
       };
 
-    return <div className="flex flex-row justify-center">
+    if(isAuth !== undefined) return <div className="flex flex-row justify-center">
       <div className={cardStyle + "flex flex-col justify-center mt-40 px-10 py-4"}>
         {isAuth && 
           <div className="text-center flex flex-col gap-3">
@@ -51,6 +52,9 @@ const WelcomePage = () => {
         || 
         <UnregistratedPage/>}
       </div>
+    </div>
+    else return <div className="flex flex-col justify-center">
+      <div className="text-3xl text-center mt-64">Завантаження...</div>
     </div>
 }
 

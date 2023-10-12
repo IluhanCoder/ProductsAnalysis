@@ -1,8 +1,16 @@
 import {useState} from "react";
 import { credentials } from "./auth-types";
 import $api from "../axios-setup";
+import { cardStyle } from "../styles/card-styles";
+import { inputStyle } from "../styles/form-styles";
+import { buttonStyle } from "../styles/button-styles";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { smallLinkStyle } from "../styles/link-styles";
 
 const LoginPage = () => {
+    const navigate = useNavigate();
+
     const [inputValue, setInputValue] = useState<credentials>({
         email: "",
         password: ""
@@ -16,19 +24,28 @@ const LoginPage = () => {
 
     const handleSubmit = async () => {
         await $api.post("/login", inputValue);
+        navigate("/");
     }
 
-    return <div>
-        <form onChange={handleOnChange}>
-            <div>
+    return <div className="flex justify-center">
+        <form onChange={handleOnChange} className={cardStyle + " flex flex-col gap-3 justify-center p-4 mt-24"}>
+            <div className="text-xl font-bold">
+                Вхід в обліковий запис
+            </div>
+            <div className="flex w-full gap-2">
                 <label>Електрона пошта</label>
-                <input type="email" name="email" value={inputValue.email} onChange={handleOnChange}/>
+                <input className={"grow " + inputStyle} type="email" name="email" value={inputValue.email} onChange={handleOnChange}/>
             </div>
-            <div>
+            <div className="flex w-full gap-2">
                 <label>Пароль</label>
-                <input type="password" name="password" value={inputValue.password} onChange={handleOnChange}/>
+                <input className={"grow " + inputStyle} type="password" name="password" value={inputValue.password} onChange={handleOnChange}/>
             </div>
-            <button type="button" onClick={handleSubmit}>Увійти в обліковий запис</button>
+            <div className="flex justify-center">
+                <button className={buttonStyle} type="button" onClick={handleSubmit}>Увійти в обліковий запис</button>
+            </div>
+            <div className="flex justify-center gap-1">
+                <label>Нема облікового запису?</label> <Link className={smallLinkStyle} to="/signup">Зареєструватися</Link>
+            </div>
         </form>
     </div>
 }

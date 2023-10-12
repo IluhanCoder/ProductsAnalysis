@@ -1,3 +1,5 @@
+import { deleteButtonStyle } from "../styles/button-styles";
+import { cardStyle } from "../styles/card-styles";
 import { Characteristic } from "./product-types"
 
 type Params = {
@@ -15,10 +17,10 @@ const CharacteristicsMapper = (params: Params) => {
         onRemove(temp);
     }
 
-    return <div className="flex flex-col">
+    return <div className={"flex flex-col p-3 gap-2"}>
         {
             characteristics.map((item: Characteristic) => {
-                return <div key={item.key} className="flex justify-between">
+                return <div key={item.key} className={"flex justify-between px-4 py-2 border " + cardStyle}>
                         <div>{
                                 item.key
                             }</div>
@@ -26,7 +28,7 @@ const CharacteristicsMapper = (params: Params) => {
                                 item.value
                             }</div>
                         {onRemove && <div>
-                            <button type="button" onClick={() => handleRemove(
+                            <button className={deleteButtonStyle} type="button" onClick={() => handleRemove(
                                 characteristics.indexOf(item)
                             )}>видалити</button>
                         </div>}
