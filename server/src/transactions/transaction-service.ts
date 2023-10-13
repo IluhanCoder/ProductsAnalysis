@@ -71,10 +71,8 @@ export default new class TransactionService {
           }
         });
 
-        console.log(transactions);
-
         if(productName) transactions = transactions.filter((transaction: any) =>
-          transaction.products.some((product: any) => product.product.name.toUpperCase().includes(productName.toUpperCase())))
+          transaction.products.some((product: any) => product.product && product.product.name.toUpperCase().includes(productName.toUpperCase())))
       
         const transactionsWithCost: any[] = [];
       
