@@ -46,11 +46,7 @@ export default new class AuthController {
             return res.json({message:'Incorrect password or email' }).send()
           }
            const token = generateToken(user.id);
-           res.cookie("token", token, {
-             withCredentials: true,
-             httpOnly: false,
-           } as CookieOptions);
-           res.status(201).json({ message: "User logged in successfully", success: true }).send();
+           res.status(201).json(token).send();
            next()
         } catch (error) {
           console.error(error);
@@ -58,7 +54,7 @@ export default new class AuthController {
       }
 
       async userVerification (req: Request, res: Response) {
-        const token = req.cookies.token
+        const {token} = req.body;
         if (!token) {
           return res.json({ status: false }).send()
         }

@@ -15,12 +15,13 @@ const WelcomePage = () => {
   const [isAuth, setIsAuth] = useState<boolean>();
 
   useEffect(() => {
-    const verifyCookie = async () => {
-      if (!cookies.token) {
+    const verifyToken = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
         setIsAuth(false);
         return;
       }
-      const { data } = await $api.post("/", {}, { withCredentials: true });
+      const { data } = await $api.post("/", {token});
       const { status, user } = data;
       setUsername(user);
       setIsAuth(true);
@@ -28,7 +29,7 @@ const WelcomePage = () => {
         ? console.log("hello user")
         : (removeCookie("token"), navigate("/login"));
     };
-    verifyCookie();
+    verifyToken();
   }, [cookies, navigate, removeCookie]);
 
   const Logout = () => {
