@@ -246,7 +246,7 @@ async predictSales(productId: string, monthToPredict: number) {
 
       monthlyTransactionInfo.sort(compareMonths);
     
-      return fillMissingMonths(monthlyTransactionInfo, "monthlyTransactions");
+      return fillMissingMonths(monthlyTransactionInfo, "monthlyTransactions", startMonth, endMonth);
     }
 
     return await getMonthlyTransactionInfo(startMonth, endMonth);
@@ -323,7 +323,7 @@ async predictSales(productId: string, monthToPredict: number) {
 
       monthlyAverageCost.sort(compareMonths);
     
-      return fillMissingMonths(monthlyAverageCost, "averageTransaction");
+      return fillMissingMonths(monthlyAverageCost, "averageTransaction", startMonth, endMonth);
     }
     
     return await getMonthlyAverageTransactionCost(startMonth, endMonth);
@@ -400,7 +400,7 @@ async predictSales(productId: string, monthToPredict: number) {
       // Sort the array by month
       monthlyTransactionCosts.sort(compareMonths);
 
-      return fillMissingMonths(monthlyTransactionCosts, "monthlyTransactionSum");
+      return fillMissingMonths(monthlyTransactionCosts, "monthlyTransactionSum", startMonth, endMonth);
     }
 
     return getMonthlyTransactionCosts(startMonth, endMonth);
@@ -455,7 +455,7 @@ async predictSales(productId: string, monthToPredict: number) {
           }
         }
       });
-    
+
       const monthlyProductSales: MonthlyProductSales[] = [];
     
       for (const monthYear in monthlyData) {
@@ -477,7 +477,7 @@ async predictSales(productId: string, monthToPredict: number) {
 
       monthlyProductSales.sort(compareMonths);
 
-      return fillMissingMonths(monthlyProductSales, "monthlyProductSales");
+      return fillMissingMonths(monthlyProductSales, "monthlyProductSales", startMonth.slice(0,-3), endMonth.slice(0,-3));
     }
 
     return await getMonthlyProductSales(productId);

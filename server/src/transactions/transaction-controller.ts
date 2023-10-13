@@ -12,7 +12,6 @@ export default new class TransactionController {
 
     async fetchTransactions (req: Request, res: Response) {
         const {filter, productName} = req.body;
-        console.log(filter);
         const transactions = await transactionService.fetchTransactions(filter, productName);
         return res.status(200).json(transactions);
     }

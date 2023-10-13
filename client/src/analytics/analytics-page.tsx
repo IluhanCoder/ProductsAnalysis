@@ -9,7 +9,7 @@ import { inputStyle } from "../styles/form-styles";
 
 const AnalyticsPage = () => {
   const [analytics, setAnalytics] = useState<AnalyticsResult>();
-  const [startDate, setStartDate] = useState<Date>(new Date("2022-12-01"));
+  const [startDate, setStartDate] = useState<Date>(new Date("2022-11-01"));
   const [endDate, setEndDate] = useState<Date>(new Date("2023-12-01"));
 
   const getData = async (startDate: Date, endDate: Date) => {

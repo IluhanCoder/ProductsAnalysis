@@ -18,13 +18,14 @@ export function incrementDateByOneMonth(dateString: string): string {
     return updatedDateString;
   }
 
-export function fillMissingMonths(data: any, field: string) {
-  const startDate = new Date(data[0].month + '-01');
-  const endDate = new Date(incrementDateByOneMonth(data[data.length - 1].month) + '-01');
+export function fillMissingMonths(data: any, field: string, start: string, end: string) {
+  const startDate = new Date(start + '-01');
+  const endDate = new Date(incrementDateByOneMonth(end) + '-01');
   const result = [];
   let currentDate = startDate;
 
   while (currentDate <= endDate) {
+
     const currentYear = currentDate.getFullYear();
     const currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Zero-padding
     const currentMonthStr = `${currentYear}-${currentMonth}`; // "yyyy-mm" format
