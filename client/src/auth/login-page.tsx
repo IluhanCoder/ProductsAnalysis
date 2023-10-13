@@ -23,8 +23,13 @@ const LoginPage = () => {
   };
 
   const handleSubmit = async () => {
-    await $api.post("/login", inputValue);
-    navigate("/");
+    try {
+      const token = (await $api.post("/login", inputValue)).data;
+      localStorage.setItem("token", token);
+      navigate("/");
+    } catch(error) {
+      console.log(error);
+    }
   };
 
   return (

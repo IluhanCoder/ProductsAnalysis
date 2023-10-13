@@ -5,4 +5,9 @@ export default new (class AuthService {
     const token = (await $api.post("/signup", { ...credentials })).data;
     localStorage.setItem("token", token);
   }
+
+  async login(inputValue: credentials) {
+    const token = (await $api.post("/login", inputValue)).data;
+    return token;
+  }
 })();
