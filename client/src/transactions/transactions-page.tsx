@@ -25,17 +25,22 @@ const TransactionsPage = () => {
   const [endDate, setEndDate] = useState<Date>(new Date("2023-12-01T23:00:00"));
 
   const filterTransactions = async (stDate: Date, enDate: Date) => {
-    const dateFilter = {
-      date: {
-        gte: stDate,
-        lte: enDate,
-      },
-    };
-    const result = await transactionService.fetchTransactions(
-      dateFilter,
-      productName,
-    );
-    setTransactions([...result]);
+    try {
+      const dateFilter = {
+        date: {
+          gte: stDate,
+          lte: enDate,
+        },
+      };
+      const result = await transactionService.fetchTransactions(
+        dateFilter,
+        productName,
+      );
+      setTransactions([...result]);
+  } catch(error: any) {
+    if(error.status = 401) toast.error("ви маєете бути авторизованими!");
+    else toast.error(error.message);
+  }
   };
 
   const handleDelete = async (transactionId: string) => {

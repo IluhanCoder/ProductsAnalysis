@@ -5,33 +5,53 @@ import { ITransaction } from "./transaction-types";
 
 export default new class TransactionController {
     async createTransaction(req: Request, res: Response) {
-        const data: ITransaction = req.body;
-        const result = await transactionService.createTransaction(data.date, data.products);
-        return res.status(200).send(result);
+        try {
+            const data: ITransaction = req.body;
+            const result = await transactionService.createTransaction(data.date, data.products);
+            return res.status(200).send(result);
+        } catch (error) {
+            return res.status(500).send(error)
+        }
     }
 
     async fetchTransactions (req: Request, res: Response) {
-        const {filter, productName} = req.body;
-        const transactions = await transactionService.fetchTransactions(filter, productName);
-        return res.status(200).json(transactions);
+        try {
+            const {filter, productName} = req.body;
+            const transactions = await transactionService.fetchTransactions(filter, productName);
+            return res.status(200).json(transactions);
+        } catch (error) {
+            return res.status(500).send(error)
+        }
     }
 
     async updateTransaction (req: Request, res: Response) {
-        const { transactionData } = req.body;
-        const { transactionId } = req.params;
-        const transaction = await transactionService.updateTransaction(transactionId, transactionData);
-        return res.status(200).json(transaction);
+        try {
+            const { transactionData } = req.body;
+            const { transactionId } = req.params;
+            const transaction = await transactionService.updateTransaction(transactionId, transactionData);
+            return res.status(200).json(transaction);
+        } catch (error) {
+            return res.status(500).send(error)
+        }
     }
 
     async deleteTransaction (req: Request, res: Response) {
-        const { transactionId } = req.params;
-        await transactionService.deleteTransaction(transactionId);
-        return res.status(200).send("transaction has been deleted succesfully");
+        try {
+            const { transactionId } = req.params;
+            await transactionService.deleteTransaction(transactionId);
+            return res.status(200).send("transaction has been deleted succesfully");
+        } catch (error) {
+            return res.status(500).send(error)
+        }
     }
 
     async filterTransactions (req: Request, res: Response) {
-        const { filter } = req.body;
-        const transactions = await transactionService.filterTransactions(filter);
-        return res.status(200).json(transactions);
+        try {
+            const { filter } = req.body;
+            const transactions = await transactionService.filterTransactions(filter);
+            return res.status(200).json(transactions);
+        } catch (error) {
+            return res.status(500).send(error)
+        }
     }
 }

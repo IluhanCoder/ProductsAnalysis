@@ -6,15 +6,24 @@ import AnalyticsGraph from "./analytics-graph";
 import ReactDatePicker from "react-datepicker";
 import { cardStyle } from "../styles/card-styles";
 import { inputStyle } from "../styles/form-styles";
+import { ToastContainer, toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const AnalyticsPage = () => {
   const [analytics, setAnalytics] = useState<AnalyticsResult>();
   const [startDate, setStartDate] = useState<Date>(new Date("2022-11-01"));
   const [endDate, setEndDate] = useState<Date>(new Date("2023-12-01"));
 
+  const navigate = useNavigate();
+
   const getData = async (startDate: Date, endDate: Date) => {
-    const result = await analyticsService.getAnalyticsData(startDate, endDate);
-    setAnalytics(result);
+    try {
+      const result = await analyticsService.getAnalyticsData(startDate, endDate);
+      setAnalytics(result);
+    } catch(error: any) {
+      if(error.status = 401) toast.error("ви маєете бути авторизованими!");
+      else toast.error(error.message);
+    }
   };
 
   const handleStart = (newDate: Date) => {
@@ -35,6 +44,7 @@ const AnalyticsPage = () => {
 
   return (
     <div className="flex flex-col gap-2 py-4">
+      <ToastContainer/>
       <div className="flex justify-center p-2">
         <div className={cardStyle + " py-1 pb-3 px-6 flex flex-col gap-2"}>
           <div className="flex justify-center text-xl">Діапазон дат</div>

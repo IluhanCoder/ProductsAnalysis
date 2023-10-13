@@ -12,7 +12,7 @@ export default new class AuthController {
           const existingUser = await prismaClient.user.findFirst({ where: {email} });
           console.log(existingUser);
           if (existingUser) {
-            return res.json({ message: "User already exists" });
+            return res.status(400).json({ message: "User already exists" });
           }
           const hashedPassword = await bcrypt.hash(password, 12);
           const data = { email, password: hashedPassword, username };
@@ -27,7 +27,7 @@ export default new class AuthController {
             .json({ message: "User signed in successfully", success: true, user });
           next();
         } catch (error) {
-          console.error(error);
+          return res.status(500).send(error);
         }
       };
 

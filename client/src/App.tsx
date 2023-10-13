@@ -42,15 +42,15 @@ function App() {
       </header>
       <Routes>
         <Route index element={<WelcomePage />} />
-        <Route path="products" element={<ProductsPage />} />
-        <Route path="new-product" element={<NewProductPage />} />
         <Route path="signup" element={<SignupPage />} />
         <Route path="login" element={<LoginPage />} />
+        <Route path="products" element={<ProductsPage />} />
+        <Route path="new-product" element={<NewProductPage />} />
         <Route path="new-transaction" element={<NewTransactionPage />} />
         <Route path="transactions" element={<TransactionsPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="prediction" element={<PredictionPage />} />
-        <Route path="pairs" element={<PairsPage />} />
+        <Route path="pairs" element={<PairsPage />} /> 
       </Routes>
     </BrowserRouter>
   );

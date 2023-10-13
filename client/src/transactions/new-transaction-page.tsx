@@ -42,17 +42,23 @@ const NewTransactionPage = () => {
   };
 
   const handleSubmit = async () => {
-    const products: Purchase[] = [];
-    productsToDisplay.map((product: ProductToDisplay) => {
-      products.push({ productId: product.id, quantity: product.quantity });
-    });
-    const newTransaction: ITransaction = {
-      date,
-      products,
-    };
-    await transactionService.createTransaction(newTransaction);
-    toast.success("транзацію успішно створено");
-    setProductsToDisplay([]);
+    try {
+      const products: Purchase[] = [];
+      productsToDisplay.map((product: ProductToDisplay) => {
+        products.push({ productId: product.id, quantity: product.quantity });
+      });
+      const newTransaction: ITransaction = {
+        date,
+        products,
+      };
+      toast("обробка запиту...");
+      await transactionService.createTransaction(newTransaction);
+      toast.success("транзацію успішно створено");
+      setProductsToDisplay([]);
+    } catch(error: any) {
+      if(error.status = 401) toast.error("ви маєете бути авторизованими!");
+      else toast.error(error.message);
+    }
   };
 
   const handleQuantityChange = (e: any) => {

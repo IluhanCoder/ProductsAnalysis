@@ -20,8 +20,13 @@ const ProductsCatalogue = (params: LocalParams) => {
   const [products, setProducts] = useState<Product[]>();
 
   async function fetchProducts() {
-    const fetchResult: Product[] = await productService.fetchProducts();
-    setProducts(fetchResult);
+    try {
+      const fetchResult: Product[] = await productService.fetchProducts();
+      setProducts(fetchResult);
+    } catch(error: any) {
+      if(error.status = 401) toast.error("ви маєете бути авторизованими!");
+      else toast.error(error.message);
+    }
   }
 
   const convertImage = (image: any) => {

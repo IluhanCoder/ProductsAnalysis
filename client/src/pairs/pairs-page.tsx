@@ -7,6 +7,7 @@ import { buttonStyle } from "../styles/button-styles";
 import { inputStyle } from "../styles/form-styles";
 import React, { useRef } from 'react';
 import html2PDF from "jspdf-html2canvas";
+import { ToastContainer, toast } from "react-toastify";
 
 const PairsPage = () => {
   const [minSupport, setMinSupport] = useState<number>(0.1);
@@ -19,16 +20,21 @@ const PairsPage = () => {
   const [resultElement, setResultElement] = useState<HTMLElement>();
 
   const handleSubmit = async () => {
-    setIsLoading(true);
-    const result = await pairsService.getPares(
-      minSupport,
-      maxSupport,
-      minConfidence,
-      maxConfidence,
-      category,
-    );
-    setIsLoading(false);
-    setResults(result);
+    try {
+      setIsLoading(true);
+      const result = await pairsService.getPares(
+        minSupport,
+        maxSupport,
+        minConfidence,
+        maxConfidence,
+        category,
+      );
+      setIsLoading(false);
+      setResults(result);
+    } catch(error: any) {
+      if(error.status = 401) toast.error("ви маєете бути авторизованими!");
+      else toast.error(error.message);
+    }
   };
 
   const convertImage = (image: any) => {
@@ -58,6 +64,7 @@ const PairsPage = () => {
 
   return (
     <div className="flex flex-col p-4">
+      <ToastContainer/>
       <div className="flex justify-center">
         <form
           className={cardStyle + "py-2 px-4 gap-2 flex flex-col justify-center"}

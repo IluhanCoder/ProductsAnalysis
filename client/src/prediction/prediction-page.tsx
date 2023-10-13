@@ -15,6 +15,7 @@ import { cardStyle } from "../styles/card-styles";
 import { inputStyle } from "../styles/form-styles";
 import { buttonStyle } from "../styles/button-styles";
 import html2PDF from "jspdf-html2canvas";
+import { ToastContainer, toast } from "react-toastify";
 
 const PredictionPage = () => {
   const [prediction, setPrediction] = useState<PredictionResponseUnit[]>([]);
@@ -25,13 +26,18 @@ const PredictionPage = () => {
   const [months, setMonths] = useState<number>(20);
 
   const getData = async () => {
-    const data = await predictionService.getPrediction(
-      currentProduct!.id,
-      months,
-    );
-    const monthly = await predictionService.getMonthlySales(currentProduct!.id);
-    setPrediction(data);
-    setProductSales(monthly);
+    try {
+      const data = await predictionService.getPrediction(
+        currentProduct!.id,
+        months,
+      );
+      const monthly = await predictionService.getMonthlySales(currentProduct!.id);
+      setPrediction(data);
+      setProductSales(monthly);
+    } catch(error: any) {
+      if(error.status = 401) toast.error("ви маєете бути авторизованими!");
+      else toast.error(error.message);
+    }
   };
 
   const handlePick = async (product: Product) => {
@@ -55,6 +61,7 @@ const PredictionPage = () => {
 
   return (
     <div>
+      <ToastContainer/>
       <div className="flex flex-col gap-2 py-4 border-2 m-2">
         <div className="text-center text-2xl">
           Оберіть товар, який ви хочете проаналізувати:
