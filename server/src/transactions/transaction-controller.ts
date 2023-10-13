@@ -10,6 +10,7 @@ export default new class TransactionController {
             const result = await transactionService.createTransaction(data.date, data.products);
             return res.status(200).send(result);
         } catch (error) {
+            console.log(error);
             return res.status(500).send(error)
         }
     }
@@ -20,6 +21,7 @@ export default new class TransactionController {
             const transactions = await transactionService.fetchTransactions(filter, productName);
             return res.status(200).json(transactions);
         } catch (error) {
+            console.log(error);
             return res.status(500).send(error)
         }
     }
@@ -31,6 +33,7 @@ export default new class TransactionController {
             const transaction = await transactionService.updateTransaction(transactionId, transactionData);
             return res.status(200).json(transaction);
         } catch (error) {
+            console.log(error);
             return res.status(500).send(error)
         }
     }
@@ -41,6 +44,7 @@ export default new class TransactionController {
             await transactionService.deleteTransaction(transactionId);
             return res.status(200).send("transaction has been deleted succesfully");
         } catch (error) {
+            console.log(error);
             return res.status(500).send(error)
         }
     }
@@ -51,6 +55,7 @@ export default new class TransactionController {
             const transactions = await transactionService.filterTransactions(filter);
             return res.status(200).json(transactions);
         } catch (error) {
+            console.log(error);
             return res.status(500).send(error)
         }
     }

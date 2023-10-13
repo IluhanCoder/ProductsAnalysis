@@ -12,6 +12,7 @@ export default new class ProductController {
             const product = await ProductService.createProduct(productData);
             return res.status(200).json(product);
         } catch (error) {
+            console.log(error);
             return res.status(500).send(error)
         }
     }
@@ -21,6 +22,7 @@ export default new class ProductController {
             const products = await productService.fetchProducts();
             return res.status(200).json(products);
         } catch (error) {
+            console.log(error);
             return res.status(500).send(error)
         }
     }
@@ -32,6 +34,7 @@ export default new class ProductController {
             const product = await productService.updateProduct(productId, productData);
             return res.status(200).json(product);
         } catch (error) {
+            console.log(error);
             return res.status(500).send(error)
         }
     }
@@ -42,6 +45,7 @@ export default new class ProductController {
             await productService.deleteProduct(productId);
             return res.status(200).send("product has been deleted succesfully");
         } catch (error) {
+            console.log(error);
             return res.status(500).send(error)
         }
     }
@@ -52,6 +56,7 @@ export default new class ProductController {
             const products = await productService.filterProducts(filter);
             return res.status(200).json(products);
         } catch (error) {
+            console.log(error);
             return res.status(500).send(error)
         }
     }
