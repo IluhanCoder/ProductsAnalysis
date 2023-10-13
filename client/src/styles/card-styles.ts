@@ -1,1 +1,1 @@
-export const cardStyle = "bg-gray-100 rounded shadow-md "
+export const cardStyle = "bg-gray-100 rounded shadow-md ";
