@@ -7,4 +7,13 @@ const $api = axios.create({
   baseURL: API_URL,
 });
 
+export function setHeader() {
+  const token = localStorage.getItem("token");
+  $api.defaults.headers.common['Authorization'] = token;
+}
+
+export function dropHeader() {
+  $api.defaults.headers.common['Authorization'] = null;
+}
+
 export default $api;

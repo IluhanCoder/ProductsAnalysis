@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import axios from "axios";
-import $api from "../axios-setup";
+import $api, { dropHeader } from "../axios-setup";
 import { Link } from "react-router-dom";
 import { buttonStyle } from "../styles/button-styles";
 import UnregistratedPage from "./unregistrated-page";
@@ -33,7 +33,8 @@ const WelcomePage = () => {
   }, [cookies, navigate, removeCookie]);
 
   const Logout = () => {
-    removeCookie("token");
+    localStorage.removeItem("token");
+    dropHeader();
     navigate("/signup");
   };
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { credentials } from "./auth-types";
-import $api from "../axios-setup";
+import $api, { setHeader } from "../axios-setup";
 import { cardStyle } from "../styles/card-styles";
 import { inputStyle } from "../styles/form-styles";
 import { buttonStyle } from "../styles/button-styles";
@@ -26,6 +26,8 @@ const LoginPage = () => {
     try {
       const token = (await $api.post("/login", inputValue)).data;
       localStorage.setItem("token", token);
+      setHeader();
+      setHeader();
       navigate("/");
     } catch(error) {
       console.log(error);
