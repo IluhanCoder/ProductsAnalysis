@@ -10,18 +10,6 @@ export default new (class TransactionService {
     filter: { date: { gte: Date; lte: Date } },
     productName: string,
   ) {
-    const startDate = filter.date.gte;
-    const endDate = filter.date.lte;
-    filter.date.gte.setUTCHours(
-      startDate.getHours(),
-      startDate.getMinutes(),
-      startDate.getSeconds(),
-    );
-    filter.date.lte.setUTCHours(
-      endDate.getHours(),
-      endDate.getMinutes(),
-      endDate.getSeconds(),
-    );
     return (await $api.post("/fetch-transactions", { filter, productName }))
       .data;
   }

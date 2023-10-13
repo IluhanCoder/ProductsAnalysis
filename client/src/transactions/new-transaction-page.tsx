@@ -8,6 +8,8 @@ import { inputStyle } from "../styles/form-styles";
 import { buttonStyle, deleteButtonStyle } from "../styles/button-styles";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import TimePicker from "./time-picker";
+import converTime from "./convert-time";
 
 type ProductToDisplay = {
   id: string;
@@ -17,6 +19,8 @@ type ProductToDisplay = {
 
 const NewTransactionPage = () => {
   const [date, setDate] = useState<Date>(new Date());
+  const [hours, setHours] = useState<string>("00");
+  const [minutesm, setMinutes] = useState<string>("00");
   const [productsToDisplay, setProductsToDisplay] = useState<
     ProductToDisplay[]
   >([]);
@@ -67,6 +71,11 @@ const NewTransactionPage = () => {
     setProductsToDisplay([...temp]);
   };
 
+  const handleTimeChange = (hours: string, minutes: string) => {
+    const newDate = converTime(hours, minutes, date);
+    setDate(newDate);
+  };
+
   return (
     <div className="flex flex-col gap-3">
       <ToastContainer />
@@ -83,6 +92,7 @@ const NewTransactionPage = () => {
             onChange={(date: Date) => setDate(date)}
             locale={"ua"}
           />
+          <TimePicker defaultHour="00" onChange={handleTimeChange}/>
         </div>
         <div className="flex flex-col py-3">
           <div className="flex justify-center">Товари в транзакції:</div>

@@ -71,7 +71,6 @@ const TransactionsPage = () => {
   const handleEndTimeChange = (hours: string, minutes: string) => {
     const newDate = convertTime(hours, minutes, endDate);
     if (newDate <= startDate) return;
-    console.log(newDate);
     setEndDate(newDate);
   };
 
