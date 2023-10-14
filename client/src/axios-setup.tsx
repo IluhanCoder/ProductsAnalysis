@@ -16,4 +16,7 @@ export function dropHeader() {
   $api.defaults.headers.common['Authorization'] = null;
 }
 
+$api.defaults.headers.common["Access-Control-Allow-Methods"] = 'POST, GET, OPTIONS, PUT, DELETE';
+$api.defaults.headers.common["Access-Control-Allow-Headers"] = 'Content-Type, Origin, Authorization';
+
 export default $api;
