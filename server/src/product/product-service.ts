@@ -22,7 +22,7 @@ export default new class ProductService {
                     category: data.category,
                     description: data.description,
                     price: data.price,
-                    image: data.image,
+                    image: data.image ?? null,
                     characteristics: {
                       createMany: {
                         data: data.characteristics.map(({ key, value }: Characteristic) => ({
@@ -33,6 +33,7 @@ export default new class ProductService {
                     },
                   },
             }
+            console.log(query);
             return await prismaClient.product.create(query);
         } catch (error) {
             console.error(error)

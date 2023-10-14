@@ -27,7 +27,6 @@ const LoginPage = () => {
       const token = (await $api.post("/login", inputValue)).data;
       localStorage.setItem("token", token);
       setHeader();
-      setHeader();
       navigate("/");
     } catch(error) {
       console.log(error);

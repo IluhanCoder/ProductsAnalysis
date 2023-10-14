@@ -19,6 +19,8 @@ const ProductsCatalogue = (params: LocalParams) => {
 
   const [products, setProducts] = useState<Product[]>();
 
+  const defaultImage = process.env.REACT_APP_IMAGE_PLACEHOLDER;
+
   async function fetchProducts() {
     try {
       const fetchResult: Product[] = await productService.fetchProducts();
@@ -30,7 +32,8 @@ const ProductsCatalogue = (params: LocalParams) => {
   }
 
   const convertImage = (image: any) => {
-    return `data:image/jpeg;base64,${Buffer.from(image.data).toString(
+    if(!image) return defaultImage;
+    return `data:image/jpeg;base64,${Buffer.from(image!.data).toString(
       "base64",
     )}`;
   };
@@ -78,7 +81,7 @@ const ProductsCatalogue = (params: LocalParams) => {
                         <div className="flex justify-center">
                           <img
                             className="w-48 rounded shadow-md"
-                            src={convertImage(product.image)}
+                            src={convertImage(product.image!)}
                           />
                         </div>
                       )}

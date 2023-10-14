@@ -15,9 +15,15 @@ import PredictionPage from "./prediction/prediction-page";
 import PairsPage from "./pairs/pairs-page";
 import { Link } from "react-router-dom";
 import { linkStyle } from "./styles/link-styles";
+import { useEffect } from "react";
+import { setHeader } from "./axios-setup";
 registerLocale("ua", uk);
 
 function App() {
+  useEffect(() =>  {
+    if(localStorage.getItem("token")) setHeader();
+  }, [])
+
   return (
     <BrowserRouter>
       <header className="flex flex-row px-4 py-2 gap-4 justify-center">

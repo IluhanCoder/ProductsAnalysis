@@ -17,7 +17,7 @@ model Product {
   category           String
   description        String
   price              Int
-  image              Bytes
+  image              Bytes?
   characteristics    Characteristic[]
   TransactionProduct TransactionProduct[]
 }

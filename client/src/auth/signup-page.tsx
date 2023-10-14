@@ -4,10 +4,14 @@ import authService from "./auth-service";
 import { cardStyle } from "../styles/card-styles";
 import { inputStyle } from "../styles/form-styles";
 import { buttonStyle } from "../styles/button-styles";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { smallLinkStyle } from "../styles/link-styles";
+import { ToastContainer, toast } from "react-toastify";
+import { userInfo } from "os";
 
 const SignupPage = () => {
+  const navigate = useNavigate();
+
   const [inputValue, setInputValue] = useState<credentials>({
     email: "",
     username: "",
@@ -22,11 +26,27 @@ const SignupPage = () => {
   };
 
   const handleSubmit = async () => {
-    await authService.SignUp(inputValue);
+    try {
+      if(!(inputValue.email.length > 0 && inputValue.username?.length! > 0 && inputValue.password.length > 0 && inputValue.passwordSub?.length! > 0)) {
+        toast.error("всі поля мають бути заповненими");
+        return
+      }
+      if(inputValue.password != inputValue.passwordSub) {
+        toast.error("поля пароль та підтвердження пароля не співпадають");
+        return
+      }
+      toast("обробка запиту...");
+     await authService.SignUp(inputValue);
+     navigate("/");
+    } catch(error: any) {
+      if(error.status = 401) toast.error("ви маєете бути авторизованими!");
+      else toast.error(error.message);
+    }
   };
 
   return (
     <div className="flex justify-center">
+      <ToastContainer/>
       <form
         onChange={handleOnChange}
         className={cardStyle + " flex flex-col gap-3 justify-center p-4 mt-24"}

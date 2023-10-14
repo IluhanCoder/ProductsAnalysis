@@ -84,18 +84,27 @@ const NewProductPage = () => {
   };
 
   const handleSubmit = async () => {
-    const newProduct: IProduct = {
-      name,
-      description,
-      category,
-      price,
-      characteristics,
-    };
-    setIsLoading(true);
-    await productService.newProduct(newProduct, avatar!);
-    toast.success("товар було успішно створено");
-    dropInput();
-    setIsLoading(false);
+    try {
+      if(!(name.length > 0 && description.length > 0 && category.length > 0 && characteristics.length > 0)) {
+        toast.error("Усі поля мають бути заповненими");
+        return;
+      }
+      const newProduct: IProduct = {
+        name,
+        description,
+        category,
+        price,
+        characteristics,
+      };
+      setIsLoading(true);
+      await productService.newProduct(newProduct, avatar!);
+      toast.success("товар було успішно створено");
+      dropInput();
+      setIsLoading(false);
+    } catch(error: any) {
+      if(error.status = 401) toast.error("ви маєете бути авторизованими!");
+      else toast.error(error.message);
+    }
   };
 
   return (
