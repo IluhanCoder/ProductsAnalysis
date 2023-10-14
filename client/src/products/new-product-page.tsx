@@ -85,7 +85,7 @@ const NewProductPage = () => {
 
   const handleSubmit = async () => {
     try {
-      if(!(name.length > 0 && description.length > 0 && category.length > 0 && characteristics.length > 0)) {
+      if(!(name.length > 0 && description.length > 0 && category.length > 0 && characteristics.length > 0 && avatar)) {
         toast.error("Усі поля мають бути заповненими");
         return;
       }
