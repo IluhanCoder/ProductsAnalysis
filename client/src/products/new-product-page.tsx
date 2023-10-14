@@ -14,6 +14,7 @@ const NewProductPage = () => {
 
   const [avatar, setAvatar] = useState<File | undefined>();
   const [imgURL, setImgURL] = useState<string>(defaultImage);
+  const [avatarSet, setAvatarSet] = useState<boolean>(false);
 
   const [name, setName] = useState<string>("");
   const [category, setCategory] = useState<string>("");
@@ -66,10 +67,12 @@ const NewProductPage = () => {
     const file: File = files[0];
     if (!file) return;
     setAvatar(file);
+    setAvatarSet(true);
   };
 
   const dropImage = () => {
     setAvatar(undefined);
+    setAvatarSet(false);
   };
 
   const dropInput = () => {
@@ -81,11 +84,12 @@ const NewProductPage = () => {
     setPrice(0);
     setCharacteristics([]);
     setCurrentCharacteristic(defaultCharacteristic);
+    setAvatarSet(false);
   };
 
   const handleSubmit = async () => {
     try {
-      if(!(name.length > 0 && description.length > 0 && category.length > 0 && characteristics.length > 0 && avatar)) {
+      if(!(name.length > 0 && description.length > 0 && category.length > 0 && characteristics.length > 0 && avatarSet)) {
         toast.error("Усі поля мають бути заповненими");
         return;
       }
